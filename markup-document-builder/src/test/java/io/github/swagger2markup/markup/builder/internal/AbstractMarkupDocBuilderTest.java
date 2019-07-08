@@ -7,19 +7,19 @@ import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import io.github.swagger2markup.markup.builder.internal.asciidoc.AsciiDoc;
 import io.github.swagger2markup.markup.builder.internal.markdown.Markdown;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class AbstractMarkupDocBuilderTest {
 
     AbstractMarkupDocBuilder builder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         builder = mock(AbstractMarkupDocBuilder.class, Mockito.CALLS_REAL_METHODS);
         builder.newLine = "\n";
@@ -77,28 +77,28 @@ public class AbstractMarkupDocBuilderTest {
         MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX).withAnchorPrefix("anchor-");
         MarkupDocBuilder copy = builder.copy(false);
 
-        Assert.assertTrue(copy instanceof AbstractMarkupDocBuilder);
+        Assertions.assertTrue(copy instanceof AbstractMarkupDocBuilder);
         AbstractMarkupDocBuilder internalCopy = (AbstractMarkupDocBuilder) copy;
-        Assert.assertEquals(LineSeparator.UNIX.toString(), internalCopy.newLine);
-        Assert.assertEquals("anchor-", internalCopy.anchorPrefix);
+        Assertions.assertEquals(LineSeparator.UNIX.toString(), internalCopy.newLine);
+        Assertions.assertEquals("anchor-", internalCopy.anchorPrefix);
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.WINDOWS);
         copy = builder.copy(false);
 
-        Assert.assertTrue(copy instanceof AbstractMarkupDocBuilder);
+        Assertions.assertTrue(copy instanceof AbstractMarkupDocBuilder);
         internalCopy = (AbstractMarkupDocBuilder) copy;
-        Assert.assertEquals(LineSeparator.WINDOWS.toString(), internalCopy.newLine);
-        Assert.assertNull(internalCopy.anchorPrefix);
+        Assertions.assertEquals(LineSeparator.WINDOWS.toString(), internalCopy.newLine);
+        Assertions.assertNull(internalCopy.anchorPrefix);
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
         builder.text("This is text");
         copy = builder.copy(true);
 
-        Assert.assertTrue(copy instanceof AbstractMarkupDocBuilder);
+        Assertions.assertTrue(copy instanceof AbstractMarkupDocBuilder);
         internalCopy = (AbstractMarkupDocBuilder) copy;
-        Assert.assertEquals(LineSeparator.UNIX.toString(), internalCopy.newLine);
-        Assert.assertNull(internalCopy.anchorPrefix);
-        Assert.assertEquals("This is text", internalCopy.documentBuilder.toString());
+        Assertions.assertEquals(LineSeparator.UNIX.toString(), internalCopy.newLine);
+        Assertions.assertNull(internalCopy.anchorPrefix);
+        Assertions.assertEquals("This is text", internalCopy.documentBuilder.toString());
 
     }
 }

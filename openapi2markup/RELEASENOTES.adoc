@@ -1,0 +1,146 @@
+= Release Notes
+
+== Version 0.1.0
+* Initial version with support for AsciiDoc and Markdown
+
+== Version 0.2.0
+* This version is not downward compatible. This version supports includes of example files and JSON/XML Schema files. See documentation.
+
+=== Version 0.2.1
+* Signed jar files and published in Maven Central
+
+=== Version 0.2.2
+* Fixed wrong dependency version to io.github.robwin:markup-document-builder
+
+=== Version 0.2.3
+* Fixed issue #7: @ApiModelProperty metadata are ignored for definitions file
+
+=== Version 0.2.4
+* Fixed issue #8: logback.xml on the classpath
+* Fixed issue #13: unknown format not supported for properties
+
+== Version 0.3.0
+* Support of YAML or JSON String as input.
+
+== Version 0.4.0
+* Updated OpenAPI-Parser from 1.0.0 to 1.0.5
+* Updated commons-lang to commons-lang3
+* OpenApi2MarkupConverter generates three documents now: overview, paths and definitions
+* Support for enums in HeaderParameter, QueryParameter, FormParameter and QueryParameter
+* Support for global consumes, produces and tags
+
+== Version 0.5.0
+* Support for including hand-written descriptions instead of using OpenAPI Annotations for descriptions
+
+=== Version 0.5.1
+* Bugfix: Definition name must be lowercase so that descriptions file can be found
+
+=== Version 0.5.2
+* OpenAPI License is not mandatory anymore
+* Updated markup-document-builder from v0.1.3 to v0.1.4
+
+=== Version 0.5.3
+* Fixed compiler warning: [options] bootstrap class path not set in conjunction with -source 1.7
+
+== Version 0.6.0
+* Updated swagger-parser from v1.0.5 to v1.0.6
+* Support for default values in Parameters and Model properties
+
+=== Version 0.6.1
+* Updated swagger-parser from v1.0.6 to v1.0.8
+
+=== Version 0.6.2
+* curl-request.adoc from spring-restdocs is also added to the example chapters
+
+=== Version 0.6.3
+* Added possibility to write object definitions to separate files. Issue #19
+
+== Version 0.7.0
+* Added support for both reference models and composed models
+
+=== Version 0.7.1
+* Workaround: If the type of a BodyParameter is String and not a Model, the schema is null and lost. Therefore the fallback type of a BodyParameter is String now.
+
+== Version 0.8.0
+* Enhancement #26 and #27: Added a pre-process hook to modify a OpenAPI Model before it is converted.
+* Bugfix #29: Tags are rendered twice
+
+== Version 0.9.0
+* Updated swagger-parser from v1.0.8 to v1.0.13
+* Support for global responses and parameters
+
+=== Version 0.9.1
+* Added support to group the paths by tags or as-is
+* Added support to order the definitions by natural ordering or as-is
+
+=== Version 0.9.2
+* Multi language support. Added russian.
+
+=== Version 0.9.3
+* Updated swagger-parser from v1.0.13 to v1.0.16
+* Enhancement #61: Refactor separated documents logic to support inter-document cross-references
+* Enhancement #53: Support for tags, paths and methods ordering
+* Enhancement #51: Support for separated operations files
+* Enhancement #52: Markdown generation for inline schemas
+
+== Version 1.0.0
+* New configuration API
+* New extension SPI
+* Added new languages: turkish, german, france
+* New security document
+* Inline schema support
+* New configuration options
+* Support of deprecated path operations
+
+=== Version 1.0.1
+* Enhancement: Support to render validation constraints of properties
+* Enhancement: Possibility to disable rendering of the security chapter below operations
+
+== Version 1.1.0
+* PR #177: Fixed rendering of recursive examples
+* PR #186: Add support for Chinese language
+* PR #190: Add support for Spanish language
+* PR #192: Updated min/max value to format correctly based on the data type
+* PR #193: Added support for exclusiveMin and exclusiveMax
+
+=== Version 1.1.1
+* Issue #194: Added a config parameter which allows to prepend the basePath to all paths.
+* Updated swagger-parser from v1.0.16 to v1.0.23
+* Added javslang v2.0.4 as a dependency
+* Added paleo-core v0.10.1 as a dependency
+* Updated markup-document-builder from 1.0.0 to 1.1.0
+* PR #201: Add support for Brazilian Portuguese language
+* PR #202: Add support for Japanese language
+* Issue #205: Fixed the option to influence resource ordering
+* Issue #198: Chinese chinese language encoding
+* Issue #207: Properties that start with an underscore are displayed correctly now
+* Refactored OpenApi2Markup to use a Component-Based design. A document can be composed of components and components can be composed of other components.
+
+== Version 1.2.0
+* Issue #214: Add page break locations
+* Issue #223: Improve example rendering
+* Issue #215: Add ability to group operations by RegEx
+* Added new configuration options: pageBreakLocations, headerRegex
+* Added new valid value for configuration headerRegex: REGEX
+* Updated markup-document-builder from 1.1.0 to 1.1.1
+
+== Version 1.3.0
+* Updated javslang from 2.0.4 to 2.0.5
+* Updated paleo-core from 0.10.1 to 0.10.2
+* Updated swagger-parser from v1.0.23 to v1.0.25
+* Decimal numbers are formatted into locale-specific strings
+
+=== Version 1.3.1
+* PR #247: Fix request path and query params example support.
+
+=== Version 1.3.2
+* PR #290: Fixed list parsing in properties file
+* PR #293: Fixed crash on empty tables
+* Updated markup-document-builder from 1.1.1 to 1.1.2
+
+=== Version 1.3.3
+* Updated swagger-parser from v1.0.25 to 1.0.35
+* PR #294: Examples always start with a newline if there is other content in the same cell
+* PR 307: Include required parameters in example request
+
+

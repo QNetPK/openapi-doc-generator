@@ -19,9 +19,9 @@
 package io.github.swagger2markup.markup.builder;
 
 import io.github.swagger2markup.markup.builder.assertions.DiffUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -47,7 +47,7 @@ public class MarkupDocBuilderTest {
     private List<MarkupTableColumn> tableColumns;
     private List<List<String>> tableCells;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         tableColumns = Arrays.asList(
                 new MarkupTableColumn().withHeader("Header1"),
@@ -287,31 +287,31 @@ public class MarkupDocBuilderTest {
     public void shouldReplaceNewLinesWithSystemNewLine() {
         MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.paragraph("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla" + newLine + newLine, builder.toString());
+        Assertions.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla" + newLine + newLine, builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.text("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla", builder.toString());
+        Assertions.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla", builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.textLine("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla" + newLine, builder.toString());
+        Assertions.assertEquals("Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla" + newLine, builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.italicText("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("*Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla*", builder.toString());
+        Assertions.assertEquals("*Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla*", builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.italicTextLine("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("*Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla*" + newLine, builder.toString());
+        Assertions.assertEquals("*Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla*" + newLine, builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.boldText("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("**Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla**", builder.toString());
+        Assertions.assertEquals("**Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla**", builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
         builder.boldTextLine("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("**Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla**" + newLine, builder.toString());
+        Assertions.assertEquals("**Long text " + newLine + " bla bla " + newLine + " bla " + newLine + " bla**" + newLine, builder.toString());
     }
 
     @Test
@@ -320,15 +320,15 @@ public class MarkupDocBuilderTest {
 
         MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC);
         builder.documentTitle("Long title \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("= Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine + newLine, builder.toString());
+        Assertions.assertEquals("= Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine + newLine, builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC);
         builder.sectionTitleLevel1("Long title \n bla bla \r bla \r\n bla");
-        Assert.assertEquals(newLine + "== Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine, builder.toString());
+        Assertions.assertEquals(newLine + "== Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine, builder.toString());
 
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC);
         builder.sectionTitleLevel2("Long title \n bla bla \r bla \r\n bla");
-        Assert.assertEquals(newLine + "=== Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine, builder.toString());
+        Assertions.assertEquals(newLine + "=== Long title " + whitespace + " bla bla " + whitespace + " bla " + whitespace + " bla" + newLine, builder.toString());
     }
 
     @Test
@@ -336,7 +336,7 @@ public class MarkupDocBuilderTest {
         String lineSeparator = LineSeparator.UNIX.toString();
         MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
         builder.paragraph("Long text \n bla bla \r bla \r\n bla");
-        Assert.assertEquals("Long text " + lineSeparator + " bla bla " + lineSeparator + " bla " + lineSeparator + " bla" + lineSeparator + lineSeparator, builder.toString());
+        Assertions.assertEquals("Long text " + lineSeparator + " bla bla " + lineSeparator + " bla " + lineSeparator + " bla" + lineSeparator + lineSeparator, builder.toString());
     }
 
     private void assertImportMarkup(String expected, String text, MarkupLanguage markupLanguage, int levelOffset) {
@@ -344,7 +344,7 @@ public class MarkupDocBuilderTest {
 
         builder.importMarkup(new StringReader(text), markupLanguage, levelOffset);
 
-        Assert.assertEquals(expected, builder.toString());
+        Assertions.assertEquals(expected, builder.toString());
     }
 
     private void assertImportMarkupException(String expected, String text, MarkupLanguage markupLanguage, int levelOffset) {
@@ -352,7 +352,7 @@ public class MarkupDocBuilderTest {
             assertImportMarkup(expected, text, markupLanguage, levelOffset);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-            Assert.assertEquals(expected, e.getMessage());
+            Assertions.assertEquals(expected, e.getMessage());
         }
     }
 
@@ -427,52 +427,52 @@ public class MarkupDocBuilderTest {
         // ASCIIDOC -> ASCIIDOC
         MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("= Title"), MarkupLanguage.ASCIIDOC);
-        Assert.assertEquals("\n= Title\n\n", builder.toString());
+        Assertions.assertEquals("\n= Title\n\n", builder.toString());
 
         // ASCIIDOC -> MARKDOWN
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("= Title"), MarkupLanguage.ASCIIDOC);
-        // Assert.assertEquals("\n# Title\n\n", builder.toString()); // Unsupported
-        Assert.assertEquals("\n= Title\n\n", builder.toString());
+        // Assertions.assertEquals("\n# Title\n\n", builder.toString()); // Unsupported
+        Assertions.assertEquals("\n= Title\n\n", builder.toString());
 
         // ASCIIDOC -> CONFLUENCE_MARKUP
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("= Title"), MarkupLanguage.ASCIIDOC);
-        // Assert.assertEquals("\nh1. Title\n\n", builder.toString()); // Unsupported
-        Assert.assertEquals("\n= Title\n\n", builder.toString());
+        // Assertions.assertEquals("\nh1. Title\n\n", builder.toString()); // Unsupported
+        Assertions.assertEquals("\n= Title\n\n", builder.toString());
 
         // MARKDOWN -> ASCIIDOC
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("# Title"), MarkupLanguage.MARKDOWN);
-        Assert.assertEquals("\n= Title\n\n", builder.toString());
+        Assertions.assertEquals("\n= Title\n\n", builder.toString());
 
         // MARKDOWN -> MARKDOWN
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("# Title"), MarkupLanguage.MARKDOWN);
-        Assert.assertEquals("\n# Title\n\n", builder.toString());
+        Assertions.assertEquals("\n# Title\n\n", builder.toString());
 
         // MARKDOWN -> CONFLUENCE_MARKUP
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("# Title"), MarkupLanguage.MARKDOWN);
-        // Assert.assertEquals("\nh1. Title\n\n", builder.toString()); // Unsupported
-        Assert.assertEquals("\n# Title\n\n", builder.toString());
+        // Assertions.assertEquals("\nh1. Title\n\n", builder.toString()); // Unsupported
+        Assertions.assertEquals("\n# Title\n\n", builder.toString());
 
         // CONFLUENCE_MARKUP -> ASCIIDOC
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("h1. Title"), MarkupLanguage.CONFLUENCE_MARKUP);
-        // Assert.assertEquals("\n= Title\n\n", builder.toString()); // Unsupported
-        Assert.assertEquals("\nh1. Title\n\n", builder.toString());
+        // Assertions.assertEquals("\n= Title\n\n", builder.toString()); // Unsupported
+        Assertions.assertEquals("\nh1. Title\n\n", builder.toString());
 
         // CONFLUENCE_MARKUP -> MARKDOWN
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("h1. Title"), MarkupLanguage.CONFLUENCE_MARKUP);
-        // Assert.assertEquals("\n# Title\n\n", builder.toString()); // Unsupported
-        Assert.assertEquals("\nh1. Title\n\n", builder.toString());
+        // Assertions.assertEquals("\n# Title\n\n", builder.toString()); // Unsupported
+        Assertions.assertEquals("\nh1. Title\n\n", builder.toString());
 
         // CONFLUENCE_MARKUP -> CONFLUENCE_MARKUP
         builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP, LineSeparator.UNIX);
         builder.importMarkup(new StringReader("h1. Title"), MarkupLanguage.CONFLUENCE_MARKUP);
-        Assert.assertEquals("\nh1. Title\n\n", builder.toString());
+        Assertions.assertEquals("\nh1. Title\n\n", builder.toString());
     }
 
     @Test

@@ -1,0 +1,36 @@
+= OpenApi2Markup Documentation
+Robert Winkler
+:toc: left
+:toclevels: 3
+:source-highlighter: coderay
+:numbered:
+:hardbreaks:
+:revnumber: {release-version}
+:revdate: {localdate}
+:icons: font
+:pagenums:
+
+include::introduction.adoc[]
+
+include::getting_started.adoc[]
+
+include::usage_guide.adoc[]
+
+include::advanced_usage.adoc[]
+
+include::extension_spi.adoc[]
+
+include::gradle_plugin.adoc[]
+
+include::maven_plugin.adoc[]
+
+include::command_line_interface.adoc[]
+
+include::docker.adoc[]
+
+include::demo.adoc[]
+
+include::contributing.adoc[]
+
+include::license.adoc[]
+

@@ -3,6 +3,8 @@
 .gradle
 build
 /bin/
-/.classpath
-/.project
-/.settings/
+.classpath
+.project
+.settings/
+target/
+
