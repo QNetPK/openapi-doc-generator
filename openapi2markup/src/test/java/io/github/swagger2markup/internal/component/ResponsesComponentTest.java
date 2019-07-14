@@ -54,7 +54,7 @@ public class ResponsesComponentTest extends AbstractComponentTest {
         OpenAPI swagger = converter.getContext().getOpenApi();
 
         PathItem path = swagger.getPaths().get("/pets/findByStatus");
-        List<PathOperation> pathOperations = PathUtils.toPathOperationsList("/pets/findByStatus", path);
+        List<PathOperation> pathOperations = PathUtils.toPathOperationsList("/pet/findByStatus", path);
 
         OpenApi2MarkupConverter.Context context = converter.getContext();
         MarkupDocBuilder markupDocBuilder = context.createMarkupDocBuilder();

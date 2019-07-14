@@ -152,12 +152,15 @@ public class ExamplesUtil {
                         abstractSerializableParameterExample = parameter.getExtensions().get("x-example");
                     }
                     if (abstractSerializableParameterExample == null) {
-                        Schema item = ((ArraySchema)parameter.getSchema()).getItems();
-                        if (item != null) {
+                        Schema item = null;
+                        if (parameter.getSchema() instanceof ArraySchema) {
+                          item = ((ArraySchema)parameter.getSchema()).getItems();
+                          if (item != null) {
                             abstractSerializableParameterExample = item.getExample();
                             if (abstractSerializableParameterExample == null) {
                                 abstractSerializableParameterExample = PropertyAdapter.generateExample(item, markupDocBuilder);
                             }
+                          }
                         }
                         if (abstractSerializableParameterExample == null) {
                             abstractSerializableParameterExample = ParameterAdapter.generateExample(parameter);
@@ -201,8 +204,14 @@ public class ExamplesUtil {
     private static Object getExamplesFromBodyParameter(Parameter parameter) {
         Object examples = ((BodyParameter) parameter).getExamples();
         if (examples == null) {
+          examples = parameter.getSchema().getExample();
+        }
+        if (examples == null && parameter.getExtensions() != null) {
             examples = parameter.getExtensions().get("x-examples");
         }
+        if (examples == null && parameter.getSchema().getExtensions() != null) {
+          examples = parameter.getSchema().getExtensions().get("x-examples");
+       }
         return examples;
     }
 

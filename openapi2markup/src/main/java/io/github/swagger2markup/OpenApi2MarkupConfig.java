@@ -250,4 +250,13 @@ public interface OpenApi2MarkupConfig {
      * @return custom timeout value
      */
     int getAsciidocPegdownTimeoutMillis();
+
+    /**
+     * Returns OpenAPI version 2 compatibility
+     * 
+     * @return version compatibility int
+     */
+    default int getOpenApiVersion() {
+      return 3;
+    }
 }

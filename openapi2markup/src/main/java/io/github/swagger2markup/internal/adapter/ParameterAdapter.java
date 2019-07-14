@@ -83,19 +83,9 @@ public class ParameterAdapter {
      * @return a generated example for the parameter
      */
     public static Object generateExample(Parameter parameter) {
-        String type = "";
-        String format = "";
-        List enumeration = new ArrayList();
-        if (parameter.getContent() != null && parameter.getContent().values() != null
-            && !parameter.getContent().values().isEmpty()) {
-          MediaType mt = parameter.getContent().values().iterator().next();
-          if (mt.getSchema() != null) {
-            type = mt.getSchema().getType();
-            format = mt.getSchema().getFormat();
-            enumeration = mt.getSchema().getEnum();
-          }
-        }
-        switch (type) {
+        Schema schema = parameter.getSchema();
+
+        switch (schema.getType()) {
             case "integer":
                 return 0;
             case "number":
@@ -103,9 +93,9 @@ public class ParameterAdapter {
             case "boolean":
                 return true;
             case "string":
-                return ExamplesUtil.generateStringExample(format, enumeration);
+                return ExamplesUtil.generateStringExample(schema.getFormat(), schema.getEnum());
             default:
-                return type;
+                return schema.getType();
         }
     }
 
@@ -138,7 +128,7 @@ public class ParameterAdapter {
     }
 
     public boolean getRequired() {
-        return parameter.getRequired();
+        return parameter.getRequired() != null && parameter.getRequired();
     }
 
     public String getPattern() {
@@ -170,10 +160,10 @@ public class ParameterAdapter {
     private Type getType(Map<String, Model> definitions, DocumentResolver definitionDocumentResolver) {
         Validate.notNull(parameter, "parameter must not be null!");
         Type type = null;
-        // FIXME
         if (parameter instanceof BodyParameter) {
             BodyParameter bodyParameter = (BodyParameter) parameter;
-            Schema model = bodyParameter.getSchema();
+            Schema model = bodyParameter.getRequestBody().getContent()
+                .values().iterator().next().getSchema();
 
             if (model != null) {
                 type = ModelUtils.getType(ModelUtils.convertToModel(model), 

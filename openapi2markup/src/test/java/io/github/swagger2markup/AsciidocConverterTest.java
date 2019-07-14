@@ -17,6 +17,7 @@ package io.github.swagger2markup;
 
 import io.github.swagger2markup.assertions.DiffUtils;
 import io.github.swagger2markup.builder.OpenApi2MarkupConfigBuilder;
+import io.github.swagger2markup.markup.builder.LineSeparator;
 import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -55,7 +56,7 @@ public class AsciidocConverterTest {
         Path file = Paths.get(AsciidocConverterTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
 
         //When
-        String asciiDocAsString = OpenApi2MarkupConverter.from(file).build()
+        String asciiDocAsString = OpenApi2MarkupConverter.fromSwagger(file).build()
                 .toString();
         //Then
         assertThat(asciiDocAsString).isNotEmpty();
@@ -69,7 +70,7 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(file).build()
+        OpenApi2MarkupConverter.fromSwagger(file).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -87,7 +88,7 @@ public class AsciidocConverterTest {
         Path outputFile = Paths.get("build/test/asciidoc/to_file/swagger.adoc");
 
         //When
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .build()
                 .toFileWithoutExtension(outputFile);
 
@@ -105,7 +106,7 @@ public class AsciidocConverterTest {
         Path outputFile = Paths.get("build/test/asciidoc/modularized_swagger/swagger.adoc");
 
         //When
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .build()
                 .toFileWithoutExtension(outputFile);
 
@@ -124,6 +125,7 @@ public class AsciidocConverterTest {
 
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .withTagOrdering(OrderBy.AS_IS)
                 .withParameterOrdering(OrderBy.AS_IS)
                 .withOperationOrdering(OrderBy.AS_IS)
@@ -131,7 +133,7 @@ public class AsciidocConverterTest {
                 .withPathsGroupedBy(GroupBy.TAGS)
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -150,6 +152,7 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .withTagOrdering(OrderBy.NATURAL)
                 .withParameterOrdering(OrderBy.NATURAL)
                 .withOperationOrdering(OrderBy.NATURAL)
@@ -157,7 +160,7 @@ public class AsciidocConverterTest {
                 .build();
 
         //When
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -176,6 +179,7 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+            .withLineSeparator(LineSeparator.UNIX)
                 .withTagOrdering(OrderBy.NATURAL)
                 .withParameterOrdering(OrderBy.NATURAL)
                 .withOperationOrdering(OrderBy.NATURAL)
@@ -184,7 +188,7 @@ public class AsciidocConverterTest {
                 .build();
 
         //When
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -207,7 +211,7 @@ public class AsciidocConverterTest {
                 .withTagOrdering(OrderBy.AS_IS)
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -230,7 +234,7 @@ public class AsciidocConverterTest {
                 .withInterDocumentCrossReferences()
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -254,7 +258,7 @@ public class AsciidocConverterTest {
                 .withGeneratedExamples()
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -273,7 +277,10 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(swaggerJsonString).build()
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
+                .withConfig(
+                    new OpenApi2MarkupConfigBuilder().withLineSeparator(LineSeparator.UNIX).build())
+                .build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -295,7 +302,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -316,10 +323,11 @@ public class AsciidocConverterTest {
 
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .withGeneratedExamples()
                 .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -341,7 +349,7 @@ public class AsciidocConverterTest {
         // When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder().withoutInlineSchema().withGeneratedExamples().build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString).withConfig(config).build().toFolder(outputDirectory);
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString).withConfig(config).build().toFolder(outputDirectory);
 
         // Then
         String[] files = outputDirectory.toFile().list();
@@ -363,7 +371,7 @@ public class AsciidocConverterTest {
             .withGeneratedExamples()
             .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
             .withConfig(config)
             .build()
             .toFolder(outputDirectory);
@@ -387,7 +395,7 @@ public class AsciidocConverterTest {
             .withGeneratedExamples()
             .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
             .withConfig(config)
             .build()
             .toFolder(outputDirectory);
@@ -409,7 +417,7 @@ public class AsciidocConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -432,7 +440,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withFlatBody()
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -454,7 +462,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withPathsGroupedBy(GroupBy.TAGS)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -478,7 +486,7 @@ public class AsciidocConverterTest {
                     .withPathsGroupedBy(GroupBy.TAGS)
                     .build();
 
-            OpenApi2MarkupConverter.from(file)
+            OpenApi2MarkupConverter.fromSwagger(file)
                     .withConfig(config)
                     .build()
                     .toFolder(outputDirectory);
@@ -497,7 +505,7 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(file).build()
+        OpenApi2MarkupConverter.fromSwagger(file).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -516,7 +524,7 @@ public class AsciidocConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(file).build()
+        OpenApi2MarkupConverter.fromSwagger(file).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -539,7 +547,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withSeparatedDefinitions()
                 .build();
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -564,7 +572,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withSeparatedOperations()
                 .build();
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -590,7 +598,7 @@ public class AsciidocConverterTest {
                 .withOpenAPIMarkupLanguage(MarkupLanguage.ASCIIDOC)
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -639,7 +647,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withOutputLanguage(language)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -660,7 +668,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withTagOrdering(OrderBy.AS_IS)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -686,7 +694,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder(configMap)
                 .withMarkupLanguage(MarkupLanguage.ASCIIDOC)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -709,8 +717,9 @@ public class AsciidocConverterTest {
 
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -733,7 +742,7 @@ public class AsciidocConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -757,7 +766,7 @@ public class AsciidocConverterTest {
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withPropertyOrdering(OrderBy.AS_IS)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -780,7 +789,7 @@ public class AsciidocConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -802,8 +811,9 @@ public class AsciidocConverterTest {
 
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -825,8 +835,9 @@ public class AsciidocConverterTest {
 
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -851,7 +862,7 @@ public class AsciidocConverterTest {
                 .withPageBreaks(new ArrayList<>(asList(PageBreakLocations.BEFORE_OPERATION, PageBreakLocations.BEFORE_OPERATION_EXAMPLE_REQUEST)))
                 .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -875,7 +886,7 @@ public class AsciidocConverterTest {
                 .withPageBreaks(new ArrayList<>(asList(PageBreakLocations.BEFORE_OPERATION, PageBreakLocations.BEFORE_OPERATION_EXAMPLE_REQUEST)))
                 .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -900,7 +911,7 @@ public class AsciidocConverterTest {
                 .withGeneratedExamples()
                 .build();
 
-        OpenApi2MarkupConverter.from(swaggerJsonString)
+        OpenApi2MarkupConverter.fromSwagger(swaggerJsonString)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);

@@ -23,7 +23,10 @@ import io.github.swagger2markup.internal.type.*;
 import io.github.swagger2markup.model.ArrayModel;
 import io.github.swagger2markup.model.ComposedModel;
 import io.github.swagger2markup.model.ModelImpl;
+import io.github.swagger2markup.model.RefModel;
 import io.github.swagger2markup.model.Model;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.Validate;
@@ -157,12 +160,39 @@ public final class ModelUtils {
       }
 
       try {
-          Model<T> cs = new ModelImpl<>(schema.getType(), schema.getFormat());
-          BeanUtils.copyProperties(cs, schema);
-          return cs;
+        if (schema instanceof ArraySchema) {
+          ArraySchema as = (ArraySchema) schema;
+          ArrayModel am = new ArrayModel(as.getType(), as.getFormat());
+          BeanUtils.copyProperties(am, as);
+          return (Model<T>) am;
+        }
+
+        if (schema instanceof ComposedSchema) {
+          ComposedSchema coms = (ComposedSchema) schema;
+          ComposedModel cm = new ComposedModel();
+          BeanUtils.copyProperties(cm, coms);
+          return (Model<T>) cm;
+        }
+
+        if (schema.get$ref() != null) {
+          RefModel rm = new RefModel();
+          BeanUtils.copyProperties(rm, schema);
+          return (Model<T>) rm;
+        }
+
+        if (("object".equals(schema.getType()) || schema.getType() == null) && schema.getProperties() != null) {
+          ModelImpl<Object> om = new ModelImpl<>("object", null);
+          BeanUtils.copyProperties(om, schema);
+          om.setType("object");
+          return (Model<T>) om;
+        }
+
+        Model<T> cs = new ModelImpl<>(schema.getType(), schema.getFormat());
+        BeanUtils.copyProperties(cs, schema);
+        return cs;
       } catch (IllegalAccessException | InvocationTargetException e1) {
         throw new IllegalArgumentException("BeanUtil conversion", e1);
-      }  
+      } 
     }
 
     public static Map<String, Model> getComponentModels(Context context) {

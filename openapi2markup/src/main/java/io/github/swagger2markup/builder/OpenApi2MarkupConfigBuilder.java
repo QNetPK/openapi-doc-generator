@@ -550,6 +550,18 @@ public class OpenApi2MarkupConfigBuilder {
         return this;
     }
 
+    /**
+     * Specifies the output OpenAPI compatibility version
+     * 
+     * @param version - the integer version
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withOpenApiVersion(int version) {
+      Validate.exclusiveBetween(2, 3, version);
+      config.openApiVersion = version;
+      return this;
+    }
+
     static class DefaultOpenApi2MarkupConfig implements OpenApi2MarkupConfig {
 
         private MarkupLanguage markupLanguage;
@@ -596,6 +608,8 @@ public class OpenApi2MarkupConfigBuilder {
         private Pattern headerPattern;
 
         private OpenApi2MarkupProperties extensionsProperties;
+
+        private int openApiVersion;
 
         @Override
         public MarkupLanguage getMarkupLanguage() {
@@ -795,6 +809,11 @@ public class OpenApi2MarkupConfigBuilder {
         @Override
         public int getAsciidocPegdownTimeoutMillis() {
             return asciidocPegdownTimeoutMillis;
+        }
+
+        @Override
+        public int getOpenApiVersion() {
+          return openApiVersion;
         }
     }
 }

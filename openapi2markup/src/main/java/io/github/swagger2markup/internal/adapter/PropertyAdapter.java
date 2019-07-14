@@ -151,7 +151,7 @@ public final class PropertyAdapter {
      * @return the type of the property
      */
     public Type getType(DocumentResolver definitionDocumentResolver) {
-        Type type = new BasicType(property.getType(), property.getTitle());
+        Type type = null;
         if (property.get$ref() != null) {
             type = new RefType(definitionDocumentResolver.apply(property.get$ref()), new ObjectType(property.get$ref(), null /* FIXME, not used for now */));
         } else if (property instanceof ArraySchema) {

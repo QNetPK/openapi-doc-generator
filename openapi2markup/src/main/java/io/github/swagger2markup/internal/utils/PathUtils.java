@@ -30,8 +30,9 @@ public class PathUtils {
      * @return the operations of a path as a map
      */
     private static Map<HttpMethod, Operation> getOperationMap(PathItem path) {
-        Map<HttpMethod, Operation> result = new LinkedHashMap<>();
+      Map<HttpMethod, Operation> result = new LinkedHashMap<>();
 
+      if (path != null) {
         if (path.getGet() != null) {
             result.put(HttpMethod.GET, path.getGet());
         }
@@ -53,8 +54,9 @@ public class PathUtils {
         if (path.getOptions() != null) {
             result.put(HttpMethod.OPTIONS, path.getOptions());
         }
+      }
 
-        return result;
+      return result;
     }
 
     /**

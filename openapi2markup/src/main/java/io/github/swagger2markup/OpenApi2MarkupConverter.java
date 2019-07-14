@@ -28,8 +28,12 @@ import io.github.swagger2markup.utils.URIUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.parser.OpenAPIV3Parser;
+import io.swagger.v3.parser.converter.SwaggerConverter;
+import io.swagger.v3.parser.core.models.ParseOptions;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -77,6 +81,7 @@ public class OpenApi2MarkupConverter {
      * @return a OpenApi2MarkupConverter
      */
     public static Builder from(URI openApiUri) {
+        LOG.info("Parsing OpenAPI V3+");
         Validate.notNull(openApiUri, "openApiUri must not be null");
         String scheme = openApiUri.getScheme();
         if (scheme != null && openApiUri.getScheme().startsWith("http")) {
@@ -93,14 +98,50 @@ public class OpenApi2MarkupConverter {
     }
 
     /**
+     * Creates a OpenApi2MarkupConverter.Builder from a Swagger V2 URI.
+     *
+     * @param swaggerUri the URI
+     * @return a OpenApi2MarkupConverter Builder
+     */
+    public static Builder fromSwagger(URI swaggerUri) {
+        LOG.info("Parsing Swagger V2");
+        Validate.notNull(swaggerUri, "swaggerUri must not be null");
+        String scheme = swaggerUri.getScheme();
+        if (scheme != null && swaggerUri.getScheme().startsWith("http")) {
+            try {
+                return fromSwagger(swaggerUri.toURL());
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Failed to convert URI to URL", e);
+            }
+        } else if (scheme != null && swaggerUri.getScheme().startsWith("file")) {
+            return fromSwagger(Paths.get(swaggerUri));
+        } else {
+            return fromSwagger(URIUtils.convertUriWithoutSchemeToFileScheme(swaggerUri));
+        }
+    }
+
+    /**
      * Creates a OpenApi2MarkupConverter.Builder using a remote URL.
      *
      * @param openApiURL the remote URL
-     * @return a OpenApi2MarkupConverter
+     * @return a OpenApi2MarkupConverter Builder
      */
     public static Builder from(URL openApiURL) {
+        LOG.info("Parsing OpenAPI V3+");
         Validate.notNull(openApiURL, "openApiURL must not be null");
         return new Builder(openApiURL);
+    }
+
+    /**
+     * Creates a OpenApi2MarkupConverter.Builder using a remote Swagger V2 URL.
+     *
+     * @param swaggerURL the remote URL
+     * @return a OpenApi2MarkupConverter Builder
+     */
+    public static Builder fromSwagger(URL swaggerURL) {
+        LOG.info("Parsing Swagger V2");
+        Validate.notNull(swaggerURL, "swaggerURL must not be null");
+        return new BuilderV2(swaggerURL);
     }
 
     /**
@@ -110,18 +151,36 @@ public class OpenApi2MarkupConverter {
      * @return a OpenApi2MarkupConverter
      */
     public static Builder from(Path openApiPath) {
+        LOG.info("Parsing OpenAPI V3+");
         Validate.notNull(openApiPath, "openApiPath must not be null");
-        if (Files.notExists(openApiPath)) {
-            throw new IllegalArgumentException(String.format("openApiPath does not exist: %s", openApiPath));
-        }
-        try {
-            if (Files.isHidden(openApiPath)) {
-                throw new IllegalArgumentException("openApiPath must not be a hidden file");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to check if openApiPath is a hidden file", e);
-        }
+        verifyPath(openApiPath, "openApiPath");
         return new Builder(openApiPath);
+    }
+
+    /**
+     * Creates a OpenApi2MarkupConverter.Builder using a local Swagger V2 Path.
+     *
+     * @param swaggerPath the local Swagger V2 Path
+     * @return a OpenApi2MarkupConverter Builder
+     */
+    public static Builder fromSwagger(Path swaggerPath) {
+        LOG.info("Parsing Swagger V2");
+        verifyPath(swaggerPath, "swaggerPath");
+        return new BuilderV2(swaggerPath);
+    }
+
+    private static void verifyPath(Path path, String caller) {
+      Validate.notNull(path, caller + " must not be null");
+      if (Files.notExists(path)) {
+          throw new IllegalArgumentException(String.format("%s does not exist: %s", caller, path));
+      }
+      try {
+          if (Files.isHidden(path)) {
+              throw new IllegalArgumentException(caller + " must not be a hidden file");
+          }
+      } catch (IOException e) {
+          throw new RuntimeException("Failed to check if " + caller + " is a hidden file", e);
+      }
     }
 
     /**
@@ -131,6 +190,7 @@ public class OpenApi2MarkupConverter {
      * @return a OpenApi2MarkupConverter
      */
     public static Builder from(OpenAPI openApi) {
+        LOG.info("Using parsed OpenAPI V3+");
         Validate.notNull(openApi, "openApi must not be null");
         return new Builder(openApi);
     }
@@ -139,11 +199,22 @@ public class OpenApi2MarkupConverter {
      * Creates a OpenApi2MarkupConverter.Builder from a given OpenAPI YAML or JSON String.
      *
      * @param openApiString the OpenAPI YAML or JSON String.
-     * @return a OpenApi2MarkupConverter
+     * @return a OpenApi2MarkupConverter Builder
      */
     public static Builder from(String openApiString) {
         Validate.notEmpty(openApiString, "openApiString must not be null");
         return from(new StringReader(openApiString));
+    }
+
+    /**
+     * Creates a OpenApi2MarkupConverter.Builder from a given Swagger YAML or JSON String.
+     *
+     * @param openApiString the Swagger YAML or JSON String.
+     * @return a OpenApi2MarkupConverter Builder
+     */
+    public static Builder fromSwagger(String swaggerString) {
+        Validate.notEmpty(swaggerString, "openApiString must not be null");
+        return fromSwagger(new StringReader(swaggerString));
     }
 
     /**
@@ -165,6 +236,21 @@ public class OpenApi2MarkupConverter {
             throw new IllegalArgumentException("OpenAPI source is in a wrong format");
 
         return new Builder(openApi);
+    }
+
+    /**
+     * Creates a OpenApi2MarkupConverter.Builder from a given Swagger YAML or JSON reader.
+     *
+     * @param openApiReader the Swagger YAML or JSON reader.
+     * @return a OpenApi2MarkupConverter Builder
+     */
+    public static Builder fromSwagger(Reader swaggerReader) {
+        Validate.notNull(swaggerReader, "openApiReader must not be null");
+        try {
+          return new BuilderV2(IOUtils.toString(swaggerReader));
+        } catch (IOException e) {
+          throw new RuntimeException("OpenAPI source can not be parsed", e);
+        }
     }
 
     /**
@@ -281,8 +367,58 @@ public class OpenApi2MarkupConverter {
         return sb.toString();
     }
 
+    public static class BuilderV2 extends Builder {
+
+      /**
+       * Creates a Swagger V2 Builder from a remote URL.
+       *
+       * @param swaggerUrl the remote URL
+       */
+      BuilderV2(URL swaggerUrl) {
+        super(readAndConvertSwagger(swaggerUrl));
+      }
+
+      private static OpenAPI readAndConvertSwagger(URL swaggerUrl) {
+        try {
+          String swaggerLocation = swaggerUrl.toURI().toString();
+          return readAndConvertSwagger(swaggerLocation);
+        } catch (URISyntaxException e) {
+          throw new IllegalArgumentException("swaggerUrl is in a wrong format", e);
+        }
+      }
+
+      private static OpenAPI readAndConvertSwagger(String url) {
+        SwaggerConverter v2Converter = new SwaggerConverter();
+        ParseOptions options = new ParseOptions();
+        options.setResolve(true);
+        SwaggerParseResult result = v2Converter.readLocation(url, null, options);
+        return result.getOpenAPI();
+      }
+
+      private static OpenAPI convertSwaggerFromString(String swaggerString) {
+        SwaggerConverter v2Converter = new SwaggerConverter();
+        ParseOptions options = new ParseOptions();
+        options.setResolve(true);
+        SwaggerParseResult result = v2Converter.readContents(swaggerString, null, options);
+        return result.getOpenAPI();
+      }
+
+      /**
+       * Creates a Swagger V2 Builder from a local Path.
+       *
+       * @param swaggerPath the local Path
+       */
+      BuilderV2(Path swaggerPath) {
+        super(readAndConvertSwagger(swaggerPath.toAbsolutePath().toUri().toString()));
+      }
+
+      public BuilderV2(String swaggerString) {
+        super(convertSwaggerFromString(swaggerString));
+      }
+    }
+
     public static class Builder {
-        private final OpenAPI openApi;
+        protected final OpenAPI openApi;
         private final URI openApiLocation;
         private OpenApi2MarkupConfig config;
         private OpenApi2MarkupExtensionRegistry extensionRegistry;
@@ -350,6 +486,15 @@ public class OpenApi2MarkupConverter {
         public OpenApi2MarkupConverter build() {
             if (config == null)
                 config = new OpenApi2MarkupConfigBuilder().build();
+
+            // force anything read from Swagger to V2 overview with UriScheme
+            if (this instanceof BuilderV2 && config.getOpenApiVersion() == 2) {
+              try {
+                FieldUtils.writeField(config.getClass().getDeclaredField("openApiVersion"), 2, true);
+              } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
+                LOG.error("Error forcing OpenAPI version to 2");
+              }
+            }
 
             if (extensionRegistry == null)
                 extensionRegistry = new OpenApi2MarkupExtensionRegistryBuilder().build();
@@ -428,5 +573,4 @@ public class OpenApi2MarkupConverter {
             this.outputPath = outputPath;
         }
     }
-
 }

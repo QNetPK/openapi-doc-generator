@@ -1,22 +1,12 @@
 = OpenApi2Markup
 :author: Robert Winkler
+:author: Akber Choudhry
 :hardbreaks:
-
-image:https://travis-ci.org/OpenApi2Markup/swagger2markup.svg?branch=master["Build Status", link="https://travis-ci.org/OpenApi2Markup/swagger2markup"] image:https://coveralls.io/repos/OpenApi2Markup/swagger2markup/badge.svg["Coverage Status", link="https://coveralls.io/r/OpenApi2Markup/swagger2markup"] image:https://api.codacy.com/project/badge/grade/498a6a39d7d84ff687546359f58ee18d["Codacy code quality", link="https://www.codacy.com/app/robwin/swagger2markup"] image:https://api.bintray.com/packages/swagger2markup/Maven/swagger2markup/images/download.svg[link="https://bintray.com/swagger2markup/Maven/swagger2markup/_latestVersion"] image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"] image:https://img.shields.io/badge/Twitter-rbrtwnklr-blue.svg["Twitter", link="https://twitter.com/rbrtwnklr"] image:https://badges.gitter.im/Join%20Chat.svg[link="https://gitter.im/RobWin/swagger2markup?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
 
 == Overview
 
-
-NOTE: Dear community,
-unfortunately I can't maintain OpenApi2Markup alone anymore. There are many interesting new topics:
-1) OpenAPI v3 support
-2) Fixing bugs
-2) Merge OpenApi2Markup repositories and create a new multi-module repository.
-Any help is welcome.
-Kind regards,
-Robert
-
+This fork is a V3-centric port of swagger2markup.  It is fully compatible with Swagger V2 specifications, but converts them to OpenAPI V3 after parsing and before markup generation.
 
 The primary goal of this project is to *simplify the generation of an up-to-date RESTful API documentation by combining documentation that's been hand-written with auto-generated API documentation* produced by https://github.com/swagger-api[OpenAPI]. The result is intended to be an *up-to-date, easy-to-read, on- and offline user guide*, comparable to https://developer.github.com/v3/[GitHub's API documentation]. The output of OpenApi2Markup can be used as an alternative to https://github.com/swagger-api/swagger-ui[swagger-ui] and can be served as static content.
 NOTE: The OpenAPI Specification has been donated to to the https://openapis.org/[Open API Initiative (OAI)] and has been renamed to the https://github.com/OAI/OpenAPI-Specification[OpenAPI Specification].

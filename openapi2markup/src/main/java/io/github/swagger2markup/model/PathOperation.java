@@ -31,6 +31,11 @@ public class PathOperation {
         this.method = method;
         this.path = path;
         this.operation = operation;
+        // FIXME
+        if (this.operation.getRequestBody() != null) {
+          this.operation.addParametersItem(
+              new BodyParameter(this.operation.getRequestBody()));
+        }
     }
 
     public HttpMethod getMethod() {

@@ -18,4 +18,8 @@ public interface Model<T> {
 
   Object getExample();
 
+  String getFormat();
+
+  String getType();
+
 }

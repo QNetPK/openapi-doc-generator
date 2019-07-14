@@ -22,17 +22,16 @@ import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.spi.MarkupComponent;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.apache.commons.lang3.Validate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +51,7 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
     private final VersionInfoComponent versionInfoComponent;
     private final ContactInfoComponent contactInfoComponent;
     private final LicenseInfoComponent licenseInfoComponent;
+    private final UriSchemeComponent uriSchemeComponent;
     private final ServerComponent serverComponent;
     private final TagsComponent tagsComponent;
     private final ProducesComponent producesComponent;
@@ -64,6 +64,7 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
         contactInfoComponent = new ContactInfoComponent(context);
         licenseInfoComponent = new LicenseInfoComponent(context);
         serverComponent = new ServerComponent(context);
+        uriSchemeComponent = new UriSchemeComponent(context);
         tagsComponent = new TagsComponent(context);
         producesComponent = new ProducesComponent(context);
         consumesComponent = new ConsumesComponent(context);
@@ -105,7 +106,7 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
       return Stream.concat(
         Optional.ofNullable(openApi.getPaths().values()).orElse(new Paths().values()).stream()
         .flatMap(p -> Optional.ofNullable(p.readOperationsMap().values()).orElse(new ArrayList<>()).stream())
-        .flatMap(q -> Optional.ofNullable(q.getResponses().entrySet()).orElse(new HashSet<>()).stream())
+        .flatMap(q -> Optional.ofNullable(q.getResponses()).orElse(new ApiResponses()).entrySet().stream())
         ,
         Optional.ofNullable(openApi.getComponents().getResponses()).orElse(new HashMap<>()).entrySet().stream())
         .map(Map.Entry::getKey)
@@ -155,8 +156,12 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
         }
     }
 
-  private void buildUriSchemeSection(MarkupDocBuilder markupDocBuilder, OpenAPI openApi) {
-    serverComponent.apply(markupDocBuilder, ServerComponent.parameters(openApi.getServers(), SECTION_TITLE_LEVEL));
+    private void buildUriSchemeSection(MarkupDocBuilder markupDocBuilder, OpenAPI openApi) {
+      if (context.getConfig().getOpenApiVersion() == 3) {
+        serverComponent.apply(markupDocBuilder, ServerComponent.parameters(openApi.getServers(), SECTION_TITLE_LEVEL));
+      } else {
+        uriSchemeComponent.apply(markupDocBuilder, UriSchemeComponent.parameters(openApi, SECTION_TITLE_LEVEL));
+      }
     }
 
     private void buildTagsSection(MarkupDocBuilder markupDocBuilder, List<Tag> tags) {

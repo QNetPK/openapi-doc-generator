@@ -48,7 +48,7 @@ public class GeneralConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(URI.create("http://petstore.swagger.io/v2/swagger.json")).build()
+        OpenApi2MarkupConverter.fromSwagger(URI.create("http://petstore.swagger.io/v2/swagger.json")).build()
                 .toFolder(outputDirectory);
 
         //Then
