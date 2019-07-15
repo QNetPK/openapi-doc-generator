@@ -1,0 +1,8 @@
+apply from: "$rootDir/gradle/publishing.gradle"
+
+description = 'Swagger2Markup import schemas extension'
+
+dependencies {
+    compile project(":swagger2markup-extension-commons")
+    testCompile project(":swagger2markup-test-commons")
+}
