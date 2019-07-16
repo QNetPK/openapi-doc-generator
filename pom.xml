@@ -174,7 +174,8 @@
   </developers>
   <modules>
     <module>openapi2markup</module>
-	<module>markup-document-builder</module>
+    <module>markup-document-builder</module>
+    <module>openapi2markup-extensions</module>
   </modules>
   <distributionManagement>
     <snapshotRepository>

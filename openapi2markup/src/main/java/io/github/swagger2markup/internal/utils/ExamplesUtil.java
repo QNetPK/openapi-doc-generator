@@ -148,7 +148,7 @@ public class ExamplesUtil {
                 if (generateMissingExamples) {
                     Object abstractSerializableParameterExample;
                     abstractSerializableParameterExample = parameter.getExample();
-                    if (abstractSerializableParameterExample == null) {
+                    if (abstractSerializableParameterExample == null && parameter.getExtensions() != null) {
                         abstractSerializableParameterExample = parameter.getExtensions().get("x-example");
                     }
                     if (abstractSerializableParameterExample == null) {
