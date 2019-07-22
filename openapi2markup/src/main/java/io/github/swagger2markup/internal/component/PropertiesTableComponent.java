@@ -23,7 +23,9 @@ import io.github.swagger2markup.internal.resolver.DocumentResolver;
 import io.github.swagger2markup.internal.type.ObjectType;
 import io.github.swagger2markup.internal.type.RefType;
 import io.github.swagger2markup.internal.type.Type;
+import io.github.swagger2markup.internal.utils.ModelUtils;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
+import io.github.swagger2markup.model.Model;
 import io.github.swagger2markup.spi.MarkupComponent;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
@@ -51,6 +53,7 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
 
     private final DocumentResolver definitionDocumentResolver;
     private final TableComponent tableComponent;
+    private final Map<String, Model> definitions;
 
     /**
      * Build a generic property table
@@ -62,6 +65,7 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
         super(context);
         this.definitionDocumentResolver = definitionDocumentResolver;
         this.tableComponent = new TableComponent(context);
+        this.definitions = ModelUtils.getComponentModels(context);
     }
 
     public static PropertiesTableComponent.Parameters parameters(Map<String, Schema> properties,
@@ -70,6 +74,7 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
         return new PropertiesTableComponent.Parameters(properties, parameterName, inlineDefinitions);
     }
 
+    @Override
     public MarkupDocBuilder apply(MarkupDocBuilder markupDocBuilder, Parameters params) {
         //TODO: This method is too complex, split it up in smaller methods to increase readability
         StringColumn.Builder nameColumnBuilder = StringColumn.builder(ColumnIds.StringColumnId.of(labels.getLabel(NAME_COLUMN)))
@@ -88,13 +93,13 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
             Map<String, Schema> sortedProperties = toSortedMap(properties, config.getPropertyOrdering());
             sortedProperties.forEach((String propertyName, Schema property) -> {
                 PropertyAdapter propertyAdapter = new PropertyAdapter(property);
-                Type propertyType = propertyAdapter.getType(definitionDocumentResolver);
+                Type propertyType = propertyAdapter.getType(definitionDocumentResolver, definitions);
 
                 if (config.isInlineSchemaEnabled()) {
                     propertyType = createInlineType(propertyType, propertyName, params.parameterName + " " + propertyName, params.inlineDefinitions);
                 }
 
-                Optional<Object> optionalExample = propertyAdapter.getExample(config.isGeneratedExamplesEnabled(), markupDocBuilder);
+                Optional<Object> optionalExample = propertyAdapter.getExample(config.isGeneratedExamplesEnabled(), markupDocBuilder, definitions);
                 Optional<Object> optionalDefaultValue = propertyAdapter.getDefaultValue();
                 Optional<Integer> optionalMaxLength = propertyAdapter.getMaxlength();
                 Optional<Integer> optionalMinLength = propertyAdapter.getMinlength();
@@ -107,7 +112,7 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
 
                 MarkupDocBuilder propertyNameContent = copyMarkupDocBuilder(markupDocBuilder);
                 propertyNameContent.boldTextLine(propertyName, true);
-                if (Optional.ofNullable(property.getRequired()).orElse(new ArrayList<String>()).contains(propertyName))
+                if (Optional.ofNullable(property.getRequired()).isPresent())
                     propertyNameContent.italicText(labels.getLabel(FLAGS_REQUIRED).toLowerCase());
                 else
                     propertyNameContent.italicText(labels.getLabel(FLAGS_OPTIONAL).toLowerCase());
@@ -117,7 +122,7 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
                 }
 
                 MarkupDocBuilder descriptionContent = copyMarkupDocBuilder(markupDocBuilder);
-                String description = markupDescription(config.getOpenApiMarkupLanguage(), markupDocBuilder, property.getDescription());
+                String description = markupDescription(config.getOpenApiMarkupLanguage(), markupDocBuilder, propertyAdapter.getDescription(definitions));
                 if (isNotBlank(description))
                     descriptionContent.text(description);
 
@@ -191,8 +196,12 @@ public class PropertiesTableComponent extends MarkupComponent<PropertiesTableCom
                         descriptionContent.newLine(true);
                     }
 
-                    if(propertyType instanceof RefType && isReferenceLink(optionalExample.get().toString())) {
+                    if(propertyType instanceof RefType) {
+                      if (isReferenceLink(optionalExample.get().toString())) {
+                        descriptionContent.boldText(labels.getLabel(EXAMPLE_COLUMN)).text(COLON).text(optionalExample.get().toString());
+                      } else {
                         descriptionContent.boldText(labels.getLabel(EXAMPLE_COLUMN)).text(COLON).crossReference(optionalExample.get().toString());
+                      }
                     } else {
                         descriptionContent.boldText(labels.getLabel(EXAMPLE_COLUMN)).text(COLON).literalText(Json.pretty(optionalExample.get()));
                     }

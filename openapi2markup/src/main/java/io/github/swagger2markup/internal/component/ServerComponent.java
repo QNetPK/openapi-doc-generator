@@ -19,17 +19,13 @@ import io.github.swagger2markup.Labels;
 import io.github.swagger2markup.OpenApi2MarkupConverter;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.spi.MarkupComponent;
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static io.github.swagger2markup.internal.utils.MarkupDocBuilderUtils.copyMarkupDocBuilder;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.join;
 
 public class ServerComponent extends MarkupComponent<ServerComponent.Parameters> {
 
@@ -46,16 +42,17 @@ public class ServerComponent extends MarkupComponent<ServerComponent.Parameters>
     public MarkupDocBuilder apply(MarkupDocBuilder markupDocBuilder, Parameters params) {
         List<Server> servers = params.servers;
         if (servers != null && ! servers.isEmpty()) {
-            markupDocBuilder.sectionTitleLevel(params.titleLevel, labels.getLabel(Labels.URI_SCHEME));
+            if (servers.size() == 1) {
+              markupDocBuilder.sectionTitleLevel(params.titleLevel, labels.getLabel(Labels.SERVER));
+            } else {
+              markupDocBuilder.sectionTitleLevel(params.titleLevel, labels.getLabel(Labels.SERVERS));
+            }
             MarkupDocBuilder paragraphBuilder = copyMarkupDocBuilder(markupDocBuilder);
             for (Server server : servers) {
               if (server.getUrl() != null) {
-                  paragraphBuilder.italicText(labels.getLabel(Labels.HOST))
+                  String description = Optional.ofNullable(server.getDescription()).orElse("");
+                  paragraphBuilder.boldText(description)
                           .textLine(COLON + server.getUrl());
-              }
-              if (server.getDescription() != null) {
-                  paragraphBuilder.italicText(labels.getLabel(Labels.BASE_PATH))
-                          .textLine(COLON + server.getDescription());
               }
             }
             markupDocBuilder.paragraph(paragraphBuilder.toString(), true);

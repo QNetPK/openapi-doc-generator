@@ -36,6 +36,16 @@ public class ArrayType extends Type {
         super(name);
         this.collectionFormat = collectionFormat;
         this.ofType = ofType;
+        RefType refType = null;
+        if (this.ofType instanceof RefType) {
+          refType = (RefType) this.ofType;
+    
+          if (this.ofType.getName() == null && refType.getRefType() != null && refType.getRefType().getUniqueName() != null && refType.getRefType().getUniqueName().indexOf('/') != -1) {
+            String tentative = refType.getRefType().getUniqueName().substring(refType.getRefType().getUniqueName().lastIndexOf('/') + 1);
+            this.ofType.setName(tentative);
+            ((RefType) this.ofType).getRefType().setName(tentative);
+          }
+        }
     }
 
     @Override

@@ -26,7 +26,6 @@ import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilders;
 import io.github.swagger2markup.utils.URIUtils;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.converter.SwaggerConverter;
 import io.swagger.v3.parser.core.models.ParseOptions;
@@ -48,10 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 
 /**
  * @author Robert Winkler
@@ -295,10 +290,9 @@ public class OpenApi2MarkupConverter {
     }
 
     private MarkupDocBuilder applyDefinitionsDocument() {
-        Map<String, Schema> definitionSchemas = Optional.ofNullable(context.getOpenApi().getComponents().getSchemas()).orElse(new HashMap<>());
         return definitionsDocument.apply(
                 context.createMarkupDocBuilder(),
-                DefinitionsDocument.parameters(ModelUtils.convertToModelMap(definitionSchemas)));
+                DefinitionsDocument.parameters(ModelUtils.getComponentModels(context)));
     }
 
     private MarkupDocBuilder applySecurityDocument() {
@@ -488,11 +482,11 @@ public class OpenApi2MarkupConverter {
                 config = new OpenApi2MarkupConfigBuilder().build();
 
             // force anything read from Swagger to V2 overview with UriScheme
-            if (this instanceof BuilderV2 && config.getOpenApiVersion() == 2) {
+            if (this instanceof BuilderV2 && config.getOpenApiVersion() != 2) {
               try {
-                FieldUtils.writeField(config.getClass().getDeclaredField("openApiVersion"), 2, true);
-              } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
-                LOG.error("Error forcing OpenAPI version to 2");
+                FieldUtils.writeField(config, "openApiVersion", 2, true);
+              } catch (IllegalAccessException | SecurityException e) {
+                LOG.error("Error forcing OpenAPI version to 2", e);
               }
             }
 

@@ -1,5 +1,6 @@
 package io.github.swagger2markup.model;
 
+import java.util.List;
 import java.util.Map;
 import io.swagger.v3.oas.models.media.Schema;
 
@@ -21,5 +22,7 @@ public interface Model<T> {
   String getFormat();
 
   String getType();
+
+  List<String> getRequired();
 
 }

@@ -259,4 +259,15 @@ public interface OpenApi2MarkupConfig {
     default int getOpenApiVersion() {
       return 3;
     }
+
+    /**
+     * Suppress produce and consume sections for Overview and Operations.
+     * 
+     * For mostly REST APIs, this is assumed.
+     * 
+     * @return whether produce/consume sections are suppressed
+     */
+    default boolean isProduceConsumeSuppressed() {
+      return false;
+    }
 }

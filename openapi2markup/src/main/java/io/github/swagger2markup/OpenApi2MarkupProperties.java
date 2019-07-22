@@ -35,7 +35,7 @@ public class OpenApi2MarkupProperties {
     /**
      * Prefix for OpenApi2Markup properties
      */
-    public static final String PROPERTIES_PREFIX = "swagger2markup";
+    public static final String PROPERTIES_PREFIX = "openApi2markup";
 
     public static final String MARKUP_LANGUAGE = PROPERTIES_PREFIX + ".markupLanguage";
     public static final String SWAGGER_MARKUP_LANGUAGE = PROPERTIES_PREFIX + ".swaggerMarkupLanguage";
@@ -70,6 +70,9 @@ public class OpenApi2MarkupProperties {
     public static final String LINE_SEPARATOR = PROPERTIES_PREFIX + ".lineSeparator";
     public static final String PAGE_BREAK_LOCATIONS = PROPERTIES_PREFIX + ".pageBreakLocations";
     public static final String ASCIIDOC_PEGDOWN_TIMEOUT = PROPERTIES_PREFIX + ".asciidoc.pegdown.timeoutMillis";
+
+    public static final String OPENAPI_VERSION = PROPERTIES_PREFIX + ".openApiVersion";
+    public static final String PRODUCE_CONSUME_SUPPRESSED = PROPERTIES_PREFIX + ".produceConsumeSuppressed";
 
     /**
      * Prefix for OpenApi2Markup extension properties

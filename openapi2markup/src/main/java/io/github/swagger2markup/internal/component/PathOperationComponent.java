@@ -108,13 +108,15 @@ public class PathOperationComponent extends MarkupComponent<PathOperationCompone
         inlineDefinitions(markupDocBuilder, buildResponsesSection(markupDocBuilder, operation), operation.getPath() + " " + operation.getMethod());
         if (locations.contains(AFTER_OPERATION_RESPONSES)) markupDocBuilder.pageBreak();
 
-        if (locations.contains(BEFORE_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
-        buildConsumesSection(markupDocBuilder, operation);
-        if (locations.contains(AFTER_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
+        if (! config.isProduceConsumeSuppressed()) {
+          if (locations.contains(BEFORE_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
+          buildConsumesSection(markupDocBuilder, operation);
+          if (locations.contains(AFTER_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
 
-        if (locations.contains(BEFORE_OPERATION_PRODUCES)) markupDocBuilder.pageBreak();
-        buildProducesSection(markupDocBuilder, operation);
-        if (locations.contains(AFTER_OPERATION_PRODUCES)) markupDocBuilder.pageBreak();
+          if (locations.contains(BEFORE_OPERATION_PRODUCES)) markupDocBuilder.pageBreak();
+          buildProducesSection(markupDocBuilder, operation);
+          if (locations.contains(AFTER_OPERATION_PRODUCES)) markupDocBuilder.pageBreak();
+        }
 
         buildTagsSection(markupDocBuilder, operation);
         buildSecuritySchemeSection(markupDocBuilder, operation);

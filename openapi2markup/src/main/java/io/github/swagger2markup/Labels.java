@@ -15,9 +15,15 @@
  */
 package io.github.swagger2markup;
 
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Labels {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Labels.class);
 
     public static final String DEFAULT_COLUMN = "default_column";
     public static final String MAXLENGTH_COLUMN = "maxlength_column";
@@ -55,6 +61,8 @@ public class Labels {
     public static final String VERSION = "version";
     public static final String OVERVIEW = "overview";
     public static final String URI_SCHEME = "uri_scheme";
+    public static final String SERVER = "server";
+    public static final String SERVERS = "servers";
     public static final String HOST = "host";
     public static final String BASE_PATH = "base_path";
     public static final String SCHEMES = "schemes";
@@ -97,10 +105,23 @@ public class Labels {
     public static final String DEPRECATED_OPERATION = "operation.deprecated";
     public static final String UNKNOWN = "unknown";
 
+    public static final String MEDIA_TYPE_COLUMN = "media_type";
+    
     private ResourceBundle resourceBundle;
+    private ResourceBundle overrideBundle;
+    private Set<String> overriddenLabels;
+    private boolean overridden;
 
     public Labels(OpenApi2MarkupConfig config) {
         this.resourceBundle = ResourceBundle.getBundle("io/github/swagger2markup/lang/labels", config.getOutputLanguage().toLocale());
+        try {
+          this.overrideBundle = ResourceBundle.getBundle("openapi2markup-labels", config.getOutputLanguage().toLocale());
+          this.overriddenLabels = this.overrideBundle.keySet();
+          overridden = true;
+        } catch (MissingResourceException e) {
+          overridden = false;
+          LOG.info("Label overrides not found", e);
+        }
     }
 
     /**
@@ -110,6 +131,9 @@ public class Labels {
      * @return the label for the given key
      */
     public String getLabel(String key) {
+        if (overridden && overriddenLabels.contains(key)) {
+          return overrideBundle.getString(key);
+        }
         return resourceBundle.getString(key);
     }
 }

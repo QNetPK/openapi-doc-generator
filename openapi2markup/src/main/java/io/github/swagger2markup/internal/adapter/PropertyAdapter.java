@@ -25,6 +25,7 @@ import io.github.swagger2markup.internal.type.RefType;
 import io.github.swagger2markup.internal.type.Type;
 import io.github.swagger2markup.internal.utils.ExamplesUtil;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
+import io.github.swagger2markup.model.Model;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
@@ -34,9 +35,9 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.media.UUIDSchema;
-import io.swagger.v3.parser.models.RefFormat;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,15 +67,22 @@ public final class PropertyAdapter {
      *
      * @param property         property
      * @param markupDocBuilder doc builder
+     * @param definitions
+     * 
      * @return a generated example for the property
      */
-    public static Object generateExample(Schema property, MarkupDocBuilder markupDocBuilder) {
+    public static Object generateExample(Schema property, MarkupDocBuilder markupDocBuilder,  Map<String, Model> definitions) {
 
-        if (property.getType() == null) {
-            return "untyped";
+        String exType = property.getType();
+        if (property.get$ref() != null) {
+          exType = "ref";
         }
 
-        switch (property.getType()) {
+        if (exType == null) {
+          return "untyped";
+        }
+
+        switch (exType) {
             case "integer":
                 return ExamplesUtil.generateIntegerExample(property instanceof IntegerSchema ? ((IntegerSchema) property).getEnum() : null);
             case "number":
@@ -85,14 +93,16 @@ public final class PropertyAdapter {
                 return ExamplesUtil.generateStringExample(property.getFormat(), property instanceof StringSchema ? ((StringSchema) property).getEnum() : null);
             case "ref":
                 if (property.get$ref() != null) {
-                    if (logger.isDebugEnabled()) logger.debug("generateExample RefProperty for " + property.getName());
-                    return markupDocBuilder.copy(false).crossReference(property.get$ref()).toString();
+                    Validate.notNull(definitions);
+                    Schema itemProperty = (Schema) definitions.get(property.get$ref());
+                    if (logger.isDebugEnabled()) logger.debug("generateExample RefProperty for " + itemProperty.getName());
+                    return markupDocBuilder.copy(false).crossReference(null, property.get$ref(), itemProperty.getTitle()).toString();
                 } else {
                     if (logger.isDebugEnabled()) logger.debug("generateExample for ref not RefProperty");
                 }
             case "array":
                 if (property instanceof ArraySchema) {
-                    return generateArrayExample((ArraySchema) property, markupDocBuilder);
+                    return generateArrayExample((ArraySchema) property, markupDocBuilder, definitions);
                 }
             default:
                 return property.getType();
@@ -106,11 +116,11 @@ public final class PropertyAdapter {
      * @param markupDocBuilder MarkupDocBuilder containing all associated settings
      * @return String example
      */
-    private static Object generateArrayExample(ArraySchema property, MarkupDocBuilder markupDocBuilder) {
+    private static Object generateArrayExample(ArraySchema property, MarkupDocBuilder markupDocBuilder, Map<String, Model> definitions) {
         Schema itemProperty = property.getItems();
         List<Object> exampleArray = new ArrayList<>();
 
-        exampleArray.add(generateExample(itemProperty, markupDocBuilder));
+        exampleArray.add(generateExample(itemProperty, markupDocBuilder, definitions));
         return exampleArray;
     }
 
@@ -145,6 +155,23 @@ public final class PropertyAdapter {
     }
 
     /**
+     * Prepares ref-type for type resolution.
+     * 
+     * @param definitionDocumentResolver
+     * @param definitions
+     * @return the type of the property
+     */
+    public Type getType(DocumentResolver definitionDocumentResolver, Map<String, Model> definitions) {
+      if (property.get$ref() != null) {
+        Model referredTo = definitions.get(property.get$ref());
+        RefType retType = new RefType(definitionDocumentResolver.apply(property.get$ref()), new ObjectType(referredTo.getTitle(), referredTo.getProperties()));
+        retType.setUniqueName(property.get$ref());
+        return retType;
+      }
+      return getType(definitionDocumentResolver);
+    }
+
+    /**
      * Retrieves the type and format of a property.
      *
      * @param definitionDocumentResolver the definition document resolver
@@ -153,7 +180,7 @@ public final class PropertyAdapter {
     public Type getType(DocumentResolver definitionDocumentResolver) {
         Type type = null;
         if (property.get$ref() != null) {
-            type = new RefType(definitionDocumentResolver.apply(property.get$ref()), new ObjectType(property.get$ref(), null /* FIXME, not used for now */));
+            type = new RefType(definitionDocumentResolver.apply(property.get$ref()), new ObjectType(property.get$ref(), null));
         } else if (property instanceof ArraySchema) {
             ArraySchema arrayProperty = (ArraySchema) property;
             Schema items = arrayProperty.getItems();
@@ -348,9 +375,10 @@ public final class PropertyAdapter {
      *
      * @param generateMissingExamples specifies if missing examples should be generated
      * @param markupDocBuilder        doc builder
+     * @param definintions 
      * @return property example display string
      */
-    public Optional<Object> getExample(boolean generateMissingExamples, MarkupDocBuilder markupDocBuilder) {
+    public Optional<Object> getExample(boolean generateMissingExamples, MarkupDocBuilder markupDocBuilder, Map<String, Model> definitions) {
         if (property.getExample() != null) {
             return Optional.ofNullable(property.getExample());
         } else if (property instanceof MapSchema) {
@@ -361,7 +389,7 @@ public final class PropertyAdapter {
                 return Optional.ofNullable(additionalProperty.getExample());
             } else if (generateMissingExamples) {
                 Map<String, Object> exampleMap = new HashMap<>();
-                exampleMap.put("string", generateExample(additionalProperty, markupDocBuilder));
+                exampleMap.put("string", generateExample(additionalProperty, markupDocBuilder, definitions));
                 return Optional.of(exampleMap);
             }
           }
@@ -369,11 +397,11 @@ public final class PropertyAdapter {
             if (generateMissingExamples) {
                 Schema itemProperty = ((ArraySchema) property).getItems();
                 List<Object> exampleArray = new ArrayList<>();
-                exampleArray.add(generateExample(itemProperty, markupDocBuilder));
+                exampleArray.add(generateExample(itemProperty, markupDocBuilder, definitions));
                 return Optional.of(exampleArray);
             }
         } else if (generateMissingExamples) {
-            return Optional.of(generateExample(property, markupDocBuilder));
+            return Optional.of(generateExample(property, markupDocBuilder, definitions));
         }
 
         return Optional.empty();
@@ -386,5 +414,17 @@ public final class PropertyAdapter {
      */
     public boolean getReadOnly() {
         return BooleanUtils.isTrue(property.getReadOnly());
+    }
+
+    /**
+     * Gets description from property or its ref.
+     * 
+     * @return description, which may be markup
+     */
+    public String getDescription(Map<String, Model> definitions) {
+      if (StringUtils.isBlank(property.getDescription()) && property.get$ref() != null) {
+        return definitions.get(property.get$ref()).getDescription();
+      }
+      return property.getDescription();
     }
 }

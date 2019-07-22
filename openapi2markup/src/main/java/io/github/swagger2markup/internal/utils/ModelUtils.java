@@ -32,7 +32,9 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.Validate;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,13 +128,17 @@ public final class ModelUtils {
             String refName = model.get$ref();
 
             Type refType = new ObjectType(refName, null);
+            Model referredTo = null;
             if (definitions.containsKey(refName)) {
-                refType = getType(definitions.get(refName), definitions, definitionDocumentResolver);
-                refType.setName(refName);
+                referredTo = definitions.get(refName);
+                refType = getType(referredTo, definitions, definitionDocumentResolver);
+                refType.setName(referredTo.getTitle());
                 refType.setUniqueName(refName);
             }
-
-            return new RefType(definitionDocumentResolver.apply(refName), refType);
+            RefType retRefType = new RefType(definitionDocumentResolver.apply(refName), refType);
+            retRefType.setName(referredTo.getTitle());
+            retRefType.setUniqueName(refName);
+            return retRefType;
         } else if (model instanceof ArrayModel) {
             ArrayModel arrayModel = ((ArrayModel) model);
 
@@ -164,6 +170,9 @@ public final class ModelUtils {
           ArraySchema as = (ArraySchema) schema;
           ArrayModel am = new ArrayModel(as.getType(), as.getFormat());
           BeanUtils.copyProperties(am, as);
+          if (am.getName() == null) {
+            am.setName(as.getTitle());
+          }
           return (Model<T>) am;
         }
 
@@ -171,12 +180,18 @@ public final class ModelUtils {
           ComposedSchema coms = (ComposedSchema) schema;
           ComposedModel cm = new ComposedModel();
           BeanUtils.copyProperties(cm, coms);
+          if (cm.getName() == null) {
+            cm.setName(coms.getTitle());
+          }
           return (Model<T>) cm;
         }
 
         if (schema.get$ref() != null) {
           RefModel rm = new RefModel();
           BeanUtils.copyProperties(rm, schema);
+          if (rm.getName() == null) {
+            rm.setName(schema.getTitle());
+          }
           return (Model<T>) rm;
         }
 
@@ -184,19 +199,49 @@ public final class ModelUtils {
           ModelImpl<Object> om = new ModelImpl<>("object", null);
           BeanUtils.copyProperties(om, schema);
           om.setType("object");
+          if (om.getName() == null) {
+            om.setName(schema.getTitle());
+          }
           return (Model<T>) om;
         }
 
         Model<T> cs = new ModelImpl<>(schema.getType(), schema.getFormat());
         BeanUtils.copyProperties(cs, schema);
         return cs;
+
       } catch (IllegalAccessException | InvocationTargetException e1) {
         throw new IllegalArgumentException("BeanUtil conversion", e1);
       } 
     }
 
+    /**
+     * Convert the pre-defined schemas into ref keys and models.
+     * 
+     * @param context
+     * @return a map of references and models
+     */
     public static Map<String, Model> getComponentModels(Context context) {
-      return convertToModelMap(Optional.ofNullable(context.getOpenApi().getComponents().getSchemas())
-          .orElse(new HashMap<>()));
+      return convertToModelMap(
+          Optional.ofNullable(context.getOpenApi().getComponents().getSchemas())
+                .orElse(new HashMap<>())
+            .entrySet().stream()
+            .collect(Collectors.toMap(e -> "#/components/schemas/" + e.getKey(), e -> e.getValue()))
+          );
+    }
+
+    public static void distributeRequired(ObjectType modelType, Model model) {
+      Validate.notNull(model);
+      List<String> requiredFields = model.getRequired();
+      if (requiredFields != null) {
+        Iterator<Map.Entry<String, Schema>> it = modelType.getProperties().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Schema> entry = it.next();
+            if (requiredFields.contains(entry.getKey())) {
+              // FIXME - kludge with current OpenAPI implementation
+                Schema s = entry.getValue().required(Collections.EMPTY_LIST);
+                entry.setValue(s);
+            }
+        }
+      }
     }
 }

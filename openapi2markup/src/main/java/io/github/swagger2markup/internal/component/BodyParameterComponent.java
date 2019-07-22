@@ -21,10 +21,13 @@ import io.github.swagger2markup.OpenApi2MarkupConverter;
 import io.github.swagger2markup.internal.adapter.ParameterAdapter;
 import io.github.swagger2markup.internal.resolver.DocumentResolver;
 import io.github.swagger2markup.internal.type.ObjectType;
+import io.github.swagger2markup.internal.type.RefType;
 import io.github.swagger2markup.internal.type.Type;
+import io.github.swagger2markup.internal.utils.ModelUtils;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.model.PathOperation;
 import io.github.swagger2markup.spi.MarkupComponent;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -33,7 +36,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import static io.github.swagger2markup.Labels.*;
 import static io.github.swagger2markup.internal.utils.MarkupDocBuilderUtils.copyMarkupDocBuilder;
 import static io.github.swagger2markup.internal.utils.MarkupDocBuilderUtils.markupDescription;
@@ -78,7 +81,9 @@ public class BodyParameterComponent extends MarkupComponent<BodyParameterCompone
                         }
 
                         MarkupDocBuilder typeInfos = copyMarkupDocBuilder(markupDocBuilder);
-                        typeInfos.italicText(labels.getLabel(NAME_COLUMN)).textLine(COLON + parameter.getName());
+                        if (parameter.getName() != null) {
+                          typeInfos.italicText(labels.getLabel(NAME_COLUMN)).textLine(COLON + parameter.getName());
+                        }
                         typeInfos.italicText(labels.getLabel(FLAGS_COLUMN)).textLine(COLON + (BooleanUtils.isTrue(parameter.getRequired()) ? labels.getLabel(FLAGS_REQUIRED).toLowerCase() : labels.getLabel(FLAGS_OPTIONAL).toLowerCase()));
 
                         if (!(type instanceof ObjectType)) {
@@ -87,11 +92,22 @@ public class BodyParameterComponent extends MarkupComponent<BodyParameterCompone
 
                         markupDocBuilder.paragraph(typeInfos.toString(), true);
 
-                        if (type instanceof ObjectType) {
+                        if (type instanceof ObjectType || (config.isFlatBodyEnabled() && type instanceof RefType)) {
                             List<ObjectType> localDefinitions = new ArrayList<>();
 
+                            ObjectType objectType = null;
+                            if (type instanceof RefType) {
+                              objectType = (ObjectType) ((RefType) type).getRefType();
+                            } else if (type instanceof ObjectType){
+                              objectType = (ObjectType) type;
+                            }
+
+                            Validate.notNull(objectType, "Only ObjectType and RefType can have body properties"); // warning for other types
+
+                            ModelUtils.distributeRequired(objectType, parameterAdapter.getModel());
+
                             propertiesTableComponent.apply(markupDocBuilder, PropertiesTableComponent.parameters(
-                                    ((ObjectType) type).getProperties(),
+                                    objectType.getProperties(),
                                     operation.getId(),
                                     localDefinitions
                             ));

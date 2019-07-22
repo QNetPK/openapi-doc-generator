@@ -10,10 +10,10 @@ public class BodyParameter extends Parameter {
   public BodyParameter(RequestBody requestBody) {
     this.requestBody = requestBody;
     super.setIn("body");
-    super.setRequired(requestBody.getRequired());
-    super.setName("Body");
-    super.set$ref(requestBody.get$ref());
     super.setSchema(requestBody.getContent().values().iterator().next().getSchema());
+    super.setRequired(requestBody.getRequired());
+    super.setName("Request Body");
+    super.set$ref(requestBody.get$ref());
     super.setDescription(requestBody.getDescription());
     super.setExtensions(requestBody.getExtensions());
   }

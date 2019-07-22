@@ -56,6 +56,7 @@ public class ParameterAdapter {
     private final List<ObjectType> inlineDefinitions = new ArrayList<>();
     private final OpenApi2MarkupConfig config;
     private Type type;
+    private Model model;
 
     public ParameterAdapter(OpenApi2MarkupConverter.Context context,
                             PathOperation operation,
@@ -162,12 +163,16 @@ public class ParameterAdapter {
         Type type = null;
         if (parameter instanceof BodyParameter) {
             BodyParameter bodyParameter = (BodyParameter) parameter;
-            Schema model = bodyParameter.getRequestBody().getContent()
+            Schema schema = bodyParameter.getRequestBody().getContent()
                 .values().iterator().next().getSchema();
 
-            if (model != null) {
-                type = ModelUtils.getType(ModelUtils.convertToModel(model), 
+            if (schema != null) {
+                this.model = ModelUtils.convertToModel(schema);
+                type = ModelUtils.getType(this.model, 
                     definitions, definitionDocumentResolver);
+                if (type instanceof RefType) {
+                  this.model = definitions.get(((RefType)type).getRefType().getUniqueName());
+                }
             } else {
                 type = new BasicType("string", bodyParameter.getName());
             }
@@ -239,5 +244,9 @@ public class ParameterAdapter {
       } else {
           return null;
       }
-  }
+    }
+
+    public Model getModel() {
+      return model;
+    }
 }

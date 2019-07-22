@@ -31,11 +31,12 @@ import io.github.swagger2markup.spi.MarkupComponent;
 import io.github.swagger2markup.spi.PathsDocumentExtension;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.headers.Header;
+import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.Validate;
-
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -79,34 +80,35 @@ public class ResponseComponent extends MarkupComponent<ResponseComponent.Paramet
             StringColumn.Builder httpCodeColumnBuilder = StringColumn.builder(StringColumnId.of(labels.getLabel(HTTP_CODE_COLUMN)))
                     .putMetaData(TableComponent.WIDTH_RATIO, "2");
             StringColumn.Builder descriptionColumnBuilder = StringColumn.builder(StringColumnId.of(labels.getLabel(DESCRIPTION_COLUMN)))
-                    .putMetaData(TableComponent.WIDTH_RATIO, "14")
+                    .putMetaData(TableComponent.WIDTH_RATIO, "10")
                     .putMetaData(TableComponent.HEADER_COLUMN, "true");
+            StringColumn.Builder mediaColumnBuilder = StringColumn.builder(StringColumnId.of(labels.getLabel(MEDIA_TYPE_COLUMN)))
+                .putMetaData(TableComponent.WIDTH_RATIO, "4")
+                .putMetaData(TableComponent.HEADER_COLUMN, "true");
             StringColumn.Builder schemaColumnBuilder = StringColumn.builder(StringColumnId.of(labels.getLabel(SCHEMA_COLUMN)))
                     .putMetaData(TableComponent.WIDTH_RATIO, "4")
                     .putMetaData(TableComponent.HEADER_COLUMN, "true");
 
             Map<String, ApiResponse> sortedResponses = toSortedMap(responses, config.getResponseOrdering());
             sortedResponses.forEach((String responseName, ApiResponse response) -> {
+              for (Entry<String, MediaType> mType : Optional.ofNullable(response.getContent()).orElse(new Content()).entrySet()) {
                 String schemaContent = labels.getLabel(NO_CONTENT);
-                if (response.getContent() != null) {
-                  for (Entry<String, MediaType> mType : response.getContent().entrySet()) {
-                    responseName = responseName + " : " + mType.getKey();
-                    Model model = ModelUtils.convertToModel(mType.getValue().getSchema());
-                    Type type = null;
 
-                    if (model != null) {
-                        type = ModelUtils.getType(model, definitions, definitionDocumentResolver);
-                    } else {
-                        type = new BasicType("string", responseName);
-                    }
+                Model model = ModelUtils.convertToModel(mType.getValue().getSchema());
+                Type type = null;
 
-                    if (config.isInlineSchemaEnabled()) {
-                        type = createInlineType(type, labels.getLabel(RESPONSE) + " " + responseName, operation.getId() + " " + labels.getLabel(RESPONSE) + " " + responseName, params.inlineDefinitions);
-                    }
-
-                    schemaContent = type.displaySchema(markupDocBuilder);
-                  }
+                if (model != null) {
+                    type = ModelUtils.getType(model, definitions, definitionDocumentResolver);
+                } else {
+                    type = new BasicType("string", responseName);
                 }
+
+                if (config.isInlineSchemaEnabled()) {
+                    type = createInlineType(type, labels.getLabel(RESPONSE) + " " + responseName, operation.getId() + " " + labels.getLabel(RESPONSE) + " " + responseName, params.inlineDefinitions);
+                }
+
+                schemaContent = type.displaySchema(markupDocBuilder);
+
 
                 MarkupDocBuilder descriptionBuilder = copyMarkupDocBuilder(markupDocBuilder);
 
@@ -144,11 +146,14 @@ public class ResponseComponent extends MarkupComponent<ResponseComponent.Paramet
 
                 httpCodeColumnBuilder.add(boldText(markupDocBuilder, responseName));
                 descriptionColumnBuilder.add(descriptionBuilder.toString());
+                mediaColumnBuilder.add(mType.getKey());
                 schemaColumnBuilder.add(schemaContent);
+              }
             });
 
             responsesBuilder = tableComponent.apply(responsesBuilder, TableComponent.parameters(httpCodeColumnBuilder.build(),
                     descriptionColumnBuilder.build(),
+                    mediaColumnBuilder.build(),
                     schemaColumnBuilder.build()));
         }
         applyPathsDocumentExtension(new PathsDocumentExtension.Context(PathsDocumentExtension.Position.OPERATION_RESPONSES_END, responsesBuilder, operation));

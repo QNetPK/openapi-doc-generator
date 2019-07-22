@@ -94,8 +94,10 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
         buildLicenseInfoSection(markupDocBuilder, info);
         buildUriSchemeSection(markupDocBuilder, openApi);
         buildTagsSection(markupDocBuilder, openApi.getTags());
-        buildConsumesSection(markupDocBuilder, getConsumes(openApi));
-        buildProducesSection(markupDocBuilder, getProduces(openApi));
+        if (! config.isProduceConsumeSuppressed()) {
+          buildConsumesSection(markupDocBuilder, getConsumes(openApi));
+          buildProducesSection(markupDocBuilder, getProduces(openApi));
+        }
         buildExternalDocsSection(markupDocBuilder, openApi.getExternalDocs());
         applyOverviewDocumentExtension(new Context(Position.DOCUMENT_END, markupDocBuilder));
         applyOverviewDocumentExtension(new Context(Position.DOCUMENT_AFTER, markupDocBuilder));

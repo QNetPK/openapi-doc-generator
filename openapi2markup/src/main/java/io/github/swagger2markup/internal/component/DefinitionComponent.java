@@ -33,8 +33,10 @@ import org.apache.commons.lang3.Validate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import static io.github.swagger2markup.Labels.POLYMORPHISM_COLUMN;
 import static io.github.swagger2markup.Labels.POLYMORPHISM_DISCRIMINATOR_COLUMN;
@@ -181,6 +183,8 @@ public class DefinitionComponent extends MarkupComponent<DefinitionComponent.Par
             String typeInfosString = typeInfos.toString();
             if (isNotBlank(typeInfosString))
                 markupDocBuilder.paragraph(typeInfosString, true);
+
+            ModelUtils.distributeRequired((ObjectType) modelType, model);
 
             Map<String, Schema> properties = ((ObjectType) modelType).getProperties();
             if (!properties.isEmpty()) {

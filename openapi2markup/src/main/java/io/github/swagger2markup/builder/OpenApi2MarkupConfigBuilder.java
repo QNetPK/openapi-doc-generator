@@ -72,57 +72,60 @@ public class OpenApi2MarkupConfigBuilder {
         compositeConfiguration.addConfiguration(configuration);
         compositeConfiguration.addConfiguration(getDefaultConfiguration());
 
-        OpenApi2MarkupProperties swagger2MarkupProperties = new OpenApi2MarkupProperties(compositeConfiguration);
+        OpenApi2MarkupProperties openApi2MarkupProperties = new OpenApi2MarkupProperties(compositeConfiguration);
 
-        config.listDelimiterEnabled = swagger2MarkupProperties.getBoolean(LIST_DELIMITER_ENABLED, false);
-        config.listDelimiter = swagger2MarkupProperties.getString(LIST_DELIMITER, ",").charAt(0);
+        config.listDelimiterEnabled = openApi2MarkupProperties.getBoolean(LIST_DELIMITER_ENABLED, false);
+        config.listDelimiter = openApi2MarkupProperties.getString(LIST_DELIMITER, ",").charAt(0);
         
         if (config.listDelimiterEnabled && configuration instanceof AbstractConfiguration) {
             ((AbstractConfiguration)configuration).setListDelimiterHandler(new DefaultListDelimiterHandler(config.listDelimiter));
         }
 
-        config.markupLanguage = swagger2MarkupProperties.getRequiredMarkupLanguage(MARKUP_LANGUAGE);
-        config.swaggerMarkupLanguage = swagger2MarkupProperties.getRequiredMarkupLanguage(SWAGGER_MARKUP_LANGUAGE);
-        config.generatedExamplesEnabled = swagger2MarkupProperties.getRequiredBoolean(GENERATED_EXAMPLES_ENABLED);
-        config.hostnameEnabled = swagger2MarkupProperties.getRequiredBoolean(HOSTNAME_ENABLED);
-        config.basePathPrefixEnabled = swagger2MarkupProperties.getRequiredBoolean(BASE_PATH_PREFIX_ENABLED);
-        config.separatedDefinitionsEnabled = swagger2MarkupProperties.getRequiredBoolean(SEPARATED_DEFINITIONS_ENABLED);
-        config.separatedOperationsEnabled = swagger2MarkupProperties.getRequiredBoolean(SEPARATED_OPERATIONS_ENABLED);
-        config.pathsGroupedBy = swagger2MarkupProperties.getGroupBy(PATHS_GROUPED_BY);
-        config.outputLanguage = swagger2MarkupProperties.getLanguage(OUTPUT_LANGUAGE);
-        config.inlineSchemaEnabled = swagger2MarkupProperties.getRequiredBoolean(INLINE_SCHEMA_ENABLED);
-        config.interDocumentCrossReferencesEnabled = swagger2MarkupProperties.getRequiredBoolean(INTER_DOCUMENT_CROSS_REFERENCES_ENABLED);
-        config.interDocumentCrossReferencesPrefix = swagger2MarkupProperties.getString(INTER_DOCUMENT_CROSS_REFERENCES_PREFIX, null);
-        config.flatBodyEnabled = swagger2MarkupProperties.getRequiredBoolean(FLAT_BODY_ENABLED);
-        config.pathSecuritySectionEnabled = swagger2MarkupProperties.getRequiredBoolean(PATH_SECURITY_SECTION_ENABLED);
-        config.anchorPrefix = swagger2MarkupProperties.getString(ANCHOR_PREFIX, null);
-        config.overviewDocument = swagger2MarkupProperties.getRequiredString(OVERVIEW_DOCUMENT);
-        config.pathsDocument = swagger2MarkupProperties.getRequiredString(PATHS_DOCUMENT);
-        config.definitionsDocument = swagger2MarkupProperties.getRequiredString(DEFINITIONS_DOCUMENT);
-        config.securityDocument = swagger2MarkupProperties.getRequiredString(SECURITY_DOCUMENT);
-        config.separatedOperationsFolder = swagger2MarkupProperties.getRequiredString(SEPARATED_OPERATIONS_FOLDER);
-        config.separatedDefinitionsFolder = swagger2MarkupProperties.getRequiredString(SEPARATED_DEFINITIONS_FOLDER);
-        config.tagOrderBy = swagger2MarkupProperties.getOrderBy(TAG_ORDER_BY);
-        config.operationOrderBy = swagger2MarkupProperties.getOrderBy(OPERATION_ORDER_BY);
-        config.definitionOrderBy = swagger2MarkupProperties.getOrderBy(DEFINITION_ORDER_BY);
-        config.parameterOrderBy = swagger2MarkupProperties.getOrderBy(PARAMETER_ORDER_BY);
-        config.propertyOrderBy = swagger2MarkupProperties.getOrderBy(PROPERTY_ORDER_BY);
-        config.responseOrderBy = swagger2MarkupProperties.getOrderBy(RESPONSE_ORDER_BY);
-        Optional<String> lineSeparator = swagger2MarkupProperties.getString(LINE_SEPARATOR);
+        config.markupLanguage = openApi2MarkupProperties.getRequiredMarkupLanguage(MARKUP_LANGUAGE);
+        config.swaggerMarkupLanguage = openApi2MarkupProperties.getRequiredMarkupLanguage(SWAGGER_MARKUP_LANGUAGE);
+        config.generatedExamplesEnabled = openApi2MarkupProperties.getRequiredBoolean(GENERATED_EXAMPLES_ENABLED);
+        config.hostnameEnabled = openApi2MarkupProperties.getRequiredBoolean(HOSTNAME_ENABLED);
+        config.basePathPrefixEnabled = openApi2MarkupProperties.getRequiredBoolean(BASE_PATH_PREFIX_ENABLED);
+        config.separatedDefinitionsEnabled = openApi2MarkupProperties.getRequiredBoolean(SEPARATED_DEFINITIONS_ENABLED);
+        config.separatedOperationsEnabled = openApi2MarkupProperties.getRequiredBoolean(SEPARATED_OPERATIONS_ENABLED);
+        config.pathsGroupedBy = openApi2MarkupProperties.getGroupBy(PATHS_GROUPED_BY);
+        config.outputLanguage = openApi2MarkupProperties.getLanguage(OUTPUT_LANGUAGE);
+        config.inlineSchemaEnabled = openApi2MarkupProperties.getRequiredBoolean(INLINE_SCHEMA_ENABLED);
+        config.interDocumentCrossReferencesEnabled = openApi2MarkupProperties.getRequiredBoolean(INTER_DOCUMENT_CROSS_REFERENCES_ENABLED);
+        config.interDocumentCrossReferencesPrefix = openApi2MarkupProperties.getString(INTER_DOCUMENT_CROSS_REFERENCES_PREFIX, null);
+        config.flatBodyEnabled = openApi2MarkupProperties.getRequiredBoolean(FLAT_BODY_ENABLED);
+        config.pathSecuritySectionEnabled = openApi2MarkupProperties.getRequiredBoolean(PATH_SECURITY_SECTION_ENABLED);
+        config.anchorPrefix = openApi2MarkupProperties.getString(ANCHOR_PREFIX, null);
+        config.overviewDocument = openApi2MarkupProperties.getRequiredString(OVERVIEW_DOCUMENT);
+        config.pathsDocument = openApi2MarkupProperties.getRequiredString(PATHS_DOCUMENT);
+        config.definitionsDocument = openApi2MarkupProperties.getRequiredString(DEFINITIONS_DOCUMENT);
+        config.securityDocument = openApi2MarkupProperties.getRequiredString(SECURITY_DOCUMENT);
+        config.separatedOperationsFolder = openApi2MarkupProperties.getRequiredString(SEPARATED_OPERATIONS_FOLDER);
+        config.separatedDefinitionsFolder = openApi2MarkupProperties.getRequiredString(SEPARATED_DEFINITIONS_FOLDER);
+        config.tagOrderBy = openApi2MarkupProperties.getOrderBy(TAG_ORDER_BY);
+        config.operationOrderBy = openApi2MarkupProperties.getOrderBy(OPERATION_ORDER_BY);
+        config.definitionOrderBy = openApi2MarkupProperties.getOrderBy(DEFINITION_ORDER_BY);
+        config.parameterOrderBy = openApi2MarkupProperties.getOrderBy(PARAMETER_ORDER_BY);
+        config.propertyOrderBy = openApi2MarkupProperties.getOrderBy(PROPERTY_ORDER_BY);
+        config.responseOrderBy = openApi2MarkupProperties.getOrderBy(RESPONSE_ORDER_BY);
+        Optional<String> lineSeparator = openApi2MarkupProperties.getString(LINE_SEPARATOR);
         if (lineSeparator.isPresent() && StringUtils.isNoneBlank(lineSeparator.get())) {
             config.lineSeparator = LineSeparator.valueOf(lineSeparator.get());
         }
 
-        config.pageBreakLocations = swagger2MarkupProperties.getPageBreakLocations(PAGE_BREAK_LOCATIONS);
+        config.pageBreakLocations = openApi2MarkupProperties.getPageBreakLocations(PAGE_BREAK_LOCATIONS);
 
-        Optional<Pattern> headerPattern = swagger2MarkupProperties.getHeaderPattern(HEADER_REGEX);
+        Optional<Pattern> headerPattern = openApi2MarkupProperties.getHeaderPattern(HEADER_REGEX);
 
         config.headerPattern = headerPattern.orElse(null);
         
         Configuration swagger2markupConfiguration = compositeConfiguration.subset(PROPERTIES_PREFIX);
         Configuration extensionsConfiguration = swagger2markupConfiguration.subset(EXTENSION_PREFIX);
         config.extensionsProperties = new OpenApi2MarkupProperties(extensionsConfiguration);
-        config.asciidocPegdownTimeoutMillis = swagger2MarkupProperties.getRequiredInt(ASCIIDOC_PEGDOWN_TIMEOUT);
+        config.asciidocPegdownTimeoutMillis = openApi2MarkupProperties.getRequiredInt(ASCIIDOC_PEGDOWN_TIMEOUT);
+
+        config.openApiVersion = openApi2MarkupProperties.getRequiredInt(OPENAPI_VERSION);
+        config.produceConsumeSuppressed = openApi2MarkupProperties.getRequiredBoolean(PRODUCE_CONSUME_SUPPRESSED);
     }
 
     /**
@@ -551,14 +554,24 @@ public class OpenApi2MarkupConfigBuilder {
     }
 
     /**
-     * Specifies the output OpenAPI compatibility version
+     * Specifies the output OpenAPI compatibility version.
      * 
      * @param version - the integer version
      * @return this builder
      */
     public OpenApi2MarkupConfigBuilder withOpenApiVersion(int version) {
-      Validate.exclusiveBetween(2, 3, version);
+      Validate.exclusiveBetween(1, 4, version);
       config.openApiVersion = version;
+      return this;
+    }
+
+    /**
+     * Specifies whether to suppress produce/consume sections.
+     * 
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withProduceConsumeSuppressed() {
+      config.produceConsumeSuppressed = true;
       return this;
     }
 
@@ -610,6 +623,7 @@ public class OpenApi2MarkupConfigBuilder {
         private OpenApi2MarkupProperties extensionsProperties;
 
         private int openApiVersion;
+        private boolean produceConsumeSuppressed;
 
         @Override
         public MarkupLanguage getMarkupLanguage() {
@@ -814,6 +828,11 @@ public class OpenApi2MarkupConfigBuilder {
         @Override
         public int getOpenApiVersion() {
           return openApiVersion;
+        }
+
+        @Override
+        public boolean isProduceConsumeSuppressed() {
+          return produceConsumeSuppressed;
         }
     }
 }
