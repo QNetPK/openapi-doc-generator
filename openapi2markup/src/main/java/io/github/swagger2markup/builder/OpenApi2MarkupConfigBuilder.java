@@ -119,13 +119,15 @@ public class OpenApi2MarkupConfigBuilder {
 
         config.headerPattern = headerPattern.orElse(null);
         
-        Configuration swagger2markupConfiguration = compositeConfiguration.subset(PROPERTIES_PREFIX);
-        Configuration extensionsConfiguration = swagger2markupConfiguration.subset(EXTENSION_PREFIX);
+        Configuration openApi2markupConfiguration = compositeConfiguration.subset(PROPERTIES_PREFIX);
+        Configuration extensionsConfiguration = openApi2markupConfiguration.subset(EXTENSION_PREFIX);
         config.extensionsProperties = new OpenApi2MarkupProperties(extensionsConfiguration);
         config.asciidocPegdownTimeoutMillis = openApi2MarkupProperties.getRequiredInt(ASCIIDOC_PEGDOWN_TIMEOUT);
 
         config.openApiVersion = openApi2MarkupProperties.getRequiredInt(OPENAPI_VERSION);
-        config.produceConsumeSuppressed = openApi2MarkupProperties.getRequiredBoolean(PRODUCE_CONSUME_SUPPRESSED);
+        config.producesConsumesEnabled = openApi2MarkupProperties.getRequiredBoolean(PRODUCES_CONSUMES_ENABLED);
+        config.tagsSectionEnabled = openApi2MarkupProperties.getRequiredBoolean(TAGS_SECTION_ENABLED);
+        config.generatedOptionalQueryParameterExampleEnabled = openApi2MarkupProperties.getRequiredBoolean(GENERATED_OPTIONAL_QUERY_PARAMETER_EXAMPLE_ENABLED);
     }
 
     /**
@@ -202,6 +204,16 @@ public class OpenApi2MarkupConfigBuilder {
         return this;
     }
 
+    /**
+     * Include generated examples for optional query parameters into the documents.
+     *
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withGeneratedOptionalQueryParameterExample() {
+        config.generatedOptionalQueryParameterExampleEnabled = true;
+        return this;
+    }
+    
     /**
      * In addition to the Definitions file, also create separate definition files for each model definition.
      *
@@ -570,8 +582,47 @@ public class OpenApi2MarkupConfigBuilder {
      * 
      * @return this builder
      */
-    public OpenApi2MarkupConfigBuilder withProduceConsumeSuppressed() {
-      config.produceConsumeSuppressed = true;
+    public OpenApi2MarkupConfigBuilder withoutProducesConsumes() {
+      config.producesConsumesEnabled = false;
+      return this;
+    }
+
+    /**
+     * Specifies whether to suppress Tag sections.
+     * 
+     * It still allows ordering of operations by tags
+     * 
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withoutTagsSection() {
+      config.tagsSectionEnabled = false;
+      return this;
+    }
+
+    /**
+     * Override label keys.
+     * 
+     * @param overridenLabels
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withLabelsOverride(Map<String, String> overriddenLabels) {
+      config.labelsOverride = overriddenLabels;
+      return this;
+    }
+
+    /**
+     * With fixed operation order.
+     * 
+     * @param comma-separated list of operation IDs
+     * @return this builder
+     */
+    public OpenApi2MarkupConfigBuilder withOperationOrder(String operationOrder) {
+      List<String> apiOperationList = new ArrayList<>();
+      apiOperationList.addAll(Arrays.asList(operationOrder.split(",")));
+  
+      config.operationOrdering =
+          Comparator.comparing(o -> Integer.valueOf(apiOperationList.indexOf(o.getOperation().getOperationId())));
+  
       return this;
     }
 
@@ -623,7 +674,10 @@ public class OpenApi2MarkupConfigBuilder {
         private OpenApi2MarkupProperties extensionsProperties;
 
         private int openApiVersion;
-        private boolean produceConsumeSuppressed;
+        private boolean producesConsumesEnabled;
+        private boolean tagsSectionEnabled;
+        private boolean generatedOptionalQueryParameterExampleEnabled;
+        public Map<String, String> labelsOverride;
 
         @Override
         public MarkupLanguage getMarkupLanguage() {
@@ -638,6 +692,11 @@ public class OpenApi2MarkupConfigBuilder {
         @Override
         public boolean isGeneratedExamplesEnabled() {
             return generatedExamplesEnabled;
+        }
+
+        @Override
+        public boolean isGeneratedOptionalQueryParameterExampleEnabled() {
+            return generatedOptionalQueryParameterExampleEnabled;
         }
 
         @Override
@@ -831,8 +890,18 @@ public class OpenApi2MarkupConfigBuilder {
         }
 
         @Override
-        public boolean isProduceConsumeSuppressed() {
-          return produceConsumeSuppressed;
+        public boolean isProducesConsumesEnabled() {
+          return producesConsumesEnabled;
+        }
+
+        @Override
+        public boolean isTagsSectionEnabled() {
+          return tagsSectionEnabled;
+        }
+
+        @Override
+        public Map<String, String> getLabelsOverride() {
+          return labelsOverride;
         }
     }
 }

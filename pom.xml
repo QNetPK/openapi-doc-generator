@@ -13,9 +13,10 @@
     <java.version>11</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.version>3.6.1</maven.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <openapi.generator.version>4.0.2</openapi.generator.version>
+    <openapi.generator.version>4.0.3</openapi.generator.version>
   </properties>
 
   <repositories>
@@ -176,6 +177,7 @@
     <module>openapi2markup</module>
     <module>markup-document-builder</module>
     <module>openapi2markup-extensions</module>
+    <module>openapi-doc-maven-plugin</module>
   </modules>
   <distributionManagement>
     <snapshotRepository>

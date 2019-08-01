@@ -404,6 +404,7 @@ public class OpenApi2MarkupConverter {
        */
       BuilderV2(Path swaggerPath) {
         super(readAndConvertSwagger(swaggerPath.toAbsolutePath().toUri().toString()));
+        super.openApiLocation = swaggerPath.toAbsolutePath().toUri();
       }
 
       public BuilderV2(String swaggerString) {
@@ -413,7 +414,7 @@ public class OpenApi2MarkupConverter {
 
     public static class Builder {
         protected final OpenAPI openApi;
-        private final URI openApiLocation;
+        protected URI openApiLocation;
         private OpenApi2MarkupConfig config;
         private OpenApi2MarkupExtensionRegistry extensionRegistry;
 
@@ -426,7 +427,7 @@ public class OpenApi2MarkupConverter {
             try {
                 this.openApiLocation = openApiUrl.toURI();
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("openApiURL is in a wrong format", e);
+                throw new IllegalArgumentException("openApiUrl is in a wrong format", e);
             }
             this.openApi = readOpenAPI(openApiUrl.toString());
         }

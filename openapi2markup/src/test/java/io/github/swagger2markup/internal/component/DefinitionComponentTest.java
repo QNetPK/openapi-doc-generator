@@ -47,7 +47,7 @@ public class DefinitionComponentTest extends AbstractComponentTest {
     public void testDefinitionComponent() throws URISyntaxException {
         //Given
         Path file = Paths.get(DefinitionComponentTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        OpenApi2MarkupConverter converter = OpenApi2MarkupConverter.from(file).build();
+        OpenApi2MarkupConverter converter = OpenApi2MarkupConverter.fromSwagger(file).build();
         OpenAPI swagger = converter.getContext().getOpenApi();
 
         Model petModel = ModelUtils.convertToModel(swagger.getComponents().getSchemas().get("Pet"));

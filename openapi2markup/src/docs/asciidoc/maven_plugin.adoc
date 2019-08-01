@@ -1,8 +1,8 @@
 == Maven Plugin
 
-OpenApi2Markup provides a Maven plugin. The Maven plugin is published in JCenter and Maven Central.
+The Maven plugin for doc generation is published in Sonatype and Maven Central.
 
-NOTE: The Maven Plugin requires at least JDK 8.
+NOTE: The Maven Plugin requires at least JDK 11.
 
 === Usage guide
 
@@ -29,17 +29,17 @@ Add the following snippet to your Maven POM file:
 <build>
     <plugins>
       <plugin>
-        <groupId>io.github.swagger2markup</groupId>
-        <artifactId>swagger2markup-maven-plugin</artifactId>
+        <groupId>com.dgwave.openapi/groupId>
+        <artifactId>openapi-doc-maven-plugin</artifactId>
         <version>{release-version}</version>
       </plugin>
     </plugins>
 </build>
 ----
 
-The plugin adds a new task goal `swagger2markup:convertOpenApi2markup`. You can run the goal as follows:
+The plugin adds a new task goal `openapi-doc:openapi2markup`. You can run the goal as follows:
 
-`mvn swagger2markup:convertOpenApi2markup` 
+`mvn openapi-doc:openapi2marku` 
 
 === Configuration
 
@@ -50,8 +50,8 @@ You can customize the task by configuring a Map of <<OpenApi2Markup properties>>
 <build>
     <plugins>
       <plugin>
-        <groupId>io.github.swagger2markup</groupId>
-        <artifactId>swagger2markup-maven-plugin</artifactId>
+        <groupId>com.dgwave.openapi</groupId>
+        <artifactId>openapi-doc-maven-plugin</artifactId>
         <version>{release-version}</version>
         <configuration>
           <swaggerInput>${project.basedir}/src/docs/swagger/swagger_petstore.yaml</swaggerInput>

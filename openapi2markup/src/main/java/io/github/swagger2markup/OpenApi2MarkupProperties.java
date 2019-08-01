@@ -35,7 +35,7 @@ public class OpenApi2MarkupProperties {
     /**
      * Prefix for OpenApi2Markup properties
      */
-    public static final String PROPERTIES_PREFIX = "openApi2markup";
+    public static final String PROPERTIES_PREFIX = "openapi2markup";
 
     public static final String MARKUP_LANGUAGE = PROPERTIES_PREFIX + ".markupLanguage";
     public static final String SWAGGER_MARKUP_LANGUAGE = PROPERTIES_PREFIX + ".swaggerMarkupLanguage";
@@ -72,7 +72,9 @@ public class OpenApi2MarkupProperties {
     public static final String ASCIIDOC_PEGDOWN_TIMEOUT = PROPERTIES_PREFIX + ".asciidoc.pegdown.timeoutMillis";
 
     public static final String OPENAPI_VERSION = PROPERTIES_PREFIX + ".openApiVersion";
-    public static final String PRODUCE_CONSUME_SUPPRESSED = PROPERTIES_PREFIX + ".produceConsumeSuppressed";
+    public static final String PRODUCES_CONSUMES_ENABLED = PROPERTIES_PREFIX + ".producesConsumesEnabled";
+    public static final String TAGS_SECTION_ENABLED = PROPERTIES_PREFIX + ".tagsSectionEnabled";
+    public static final String GENERATED_OPTIONAL_QUERY_PARAMETER_EXAMPLE_ENABLED = PROPERTIES_PREFIX + ".generatedOptionalQueryParameterExampleEnabled";
 
     /**
      * Prefix for OpenApi2Markup extension properties

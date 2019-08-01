@@ -17,7 +17,7 @@ package io.github.swagger2markup.internal.resolver;
 
 
 import io.github.swagger2markup.OpenApi2MarkupConverter;
-
+import io.github.swagger2markup.utils.IOUtils;
 import java.io.File;
 
 import static io.github.swagger2markup.utils.IOUtils.normalizeName;
@@ -29,9 +29,11 @@ public class DefinitionDocumentNameResolver extends DocumentResolver {
     }
 
     public String apply(String definitionName) {
-        if (config.isSeparatedDefinitionsEnabled())
-            return new File(config.getSeparatedDefinitionsFolder(), markupDocBuilder.addFileExtension(normalizeName(definitionName))).getPath();
-        else
-            return markupDocBuilder.addFileExtension(config.getDefinitionsDocument());
+        if (config.isSeparatedDefinitionsEnabled()) {
+            return new File(
+                IOUtils.externalizeDefinitionPath(new File(config.getSeparatedDefinitionsFolder()).toPath(), definitionName).toFile(), 
+                markupDocBuilder.addFileExtension(normalizeName(IOUtils.getNameFromDefinitionPath(definitionName)))).getPath();
+        }
+        return markupDocBuilder.addFileExtension(config.getDefinitionsDocument());
     }
 }

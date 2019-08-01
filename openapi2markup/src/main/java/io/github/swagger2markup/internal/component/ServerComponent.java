@@ -50,7 +50,7 @@ public class ServerComponent extends MarkupComponent<ServerComponent.Parameters>
             MarkupDocBuilder paragraphBuilder = copyMarkupDocBuilder(markupDocBuilder);
             for (Server server : servers) {
               if (server.getUrl() != null) {
-                  String description = Optional.ofNullable(server.getDescription()).orElse("");
+                  String description = Optional.ofNullable(server.getDescription()).orElse("-");
                   paragraphBuilder.boldText(description)
                           .textLine(COLON + server.getUrl());
               }

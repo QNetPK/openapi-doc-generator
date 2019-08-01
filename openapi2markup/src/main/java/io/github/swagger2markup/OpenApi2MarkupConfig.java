@@ -21,6 +21,7 @@ import io.github.swagger2markup.model.PathOperation;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -256,9 +257,7 @@ public interface OpenApi2MarkupConfig {
      * 
      * @return version compatibility int
      */
-    default int getOpenApiVersion() {
-      return 3;
-    }
+    int getOpenApiVersion();
 
     /**
      * Suppress produce and consume sections for Overview and Operations.
@@ -267,7 +266,28 @@ public interface OpenApi2MarkupConfig {
      * 
      * @return whether produce/consume sections are suppressed
      */
-    default boolean isProduceConsumeSuppressed() {
-      return false;
-    }
+    boolean isProducesConsumesEnabled();
+
+    /**
+     * Enable Tags section in globally in operations.
+     * 
+     * Enabled by default
+     *
+     * @return true if enabled
+     */
+    boolean isTagsSectionEnabled();
+
+    /**
+     * When creating an example for a query parameter, also create when not required.
+     * 
+     * @return true if optional query parameter example will be generated
+     */
+    boolean isGeneratedOptionalQueryParameterExampleEnabled();
+
+    /**
+     * Returns a map of overridden label keys;
+     * 
+     * @return map of keys and labels
+     */
+    Map<String, String> getLabelsOverride();
 }

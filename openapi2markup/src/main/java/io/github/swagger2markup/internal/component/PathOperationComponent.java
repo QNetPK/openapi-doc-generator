@@ -108,7 +108,7 @@ public class PathOperationComponent extends MarkupComponent<PathOperationCompone
         inlineDefinitions(markupDocBuilder, buildResponsesSection(markupDocBuilder, operation), operation.getPath() + " " + operation.getMethod());
         if (locations.contains(AFTER_OPERATION_RESPONSES)) markupDocBuilder.pageBreak();
 
-        if (! config.isProduceConsumeSuppressed()) {
+        if (config.isProducesConsumesEnabled()) {
           if (locations.contains(BEFORE_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
           buildConsumesSection(markupDocBuilder, operation);
           if (locations.contains(AFTER_OPERATION_CONSUMES)) markupDocBuilder.pageBreak();
@@ -350,7 +350,7 @@ public class PathOperationComponent extends MarkupComponent<PathOperationCompone
      */
     private void buildExamplesSection(MarkupDocBuilder markupDocBuilder, PathOperation operation, List<PageBreakLocations> locations) {
 
-        Map<String, Object> generatedRequestExampleMap = ExamplesUtil.generateRequestExampleMap(config.isGeneratedExamplesEnabled(), operation, definitions, definitionDocumentResolver, markupDocBuilder);
+        Map<String, Object> generatedRequestExampleMap = ExamplesUtil.generateRequestExampleMap(config.isGeneratedExamplesEnabled(), operation, definitions, definitionDocumentResolver, markupDocBuilder, config.isGeneratedExamplesEnabled());
         Map<String, Object> generatedResponseExampleMap = ExamplesUtil.generateResponseExampleMap(config.isGeneratedExamplesEnabled(), operation, definitions, definitionDocumentResolver, markupDocBuilder);
 
         boolean beforeExampleRequestBreak = locations.contains(BEFORE_OPERATION_EXAMPLE_REQUEST);

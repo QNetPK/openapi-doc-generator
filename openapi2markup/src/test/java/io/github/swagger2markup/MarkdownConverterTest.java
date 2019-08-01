@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.github.swagger2markup.assertions.DiffUtils;
 import io.github.swagger2markup.builder.OpenApi2MarkupConfigBuilder;
+import io.github.swagger2markup.markup.builder.LineSeparator;
 import io.github.swagger2markup.markup.builder.MarkupLanguage;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,8 +130,9 @@ public class MarkdownConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -153,8 +155,9 @@ public class MarkdownConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -180,7 +183,7 @@ public class MarkdownConverterTest {
                 .withInterDocumentCrossReferences()
                 .build();
 
-        OpenApi2MarkupConverter.from(file).withConfig(config).build()
+        OpenApi2MarkupConverter.fromSwagger(file).withConfig(config).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -203,7 +206,7 @@ public class MarkdownConverterTest {
                 .withSeparatedDefinitions()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -214,7 +217,7 @@ public class MarkdownConverterTest {
         assertThat(files).hasSize(5).containsAll(expectedFiles);
 
         Path definitionsDirectory = outputDirectory.resolve("definitions");
-        String[] definitions = definitionsDirectory.toFile().list();
+        String[] definitions = definitionsDirectory.resolve("components/schemas").toFile().list();
         assertThat(definitions).hasSize(5).containsAll(
                 asList("Category.md", "Order.md", "Pet.md", "Tag.md", "User.md"));
     }
@@ -229,8 +232,9 @@ public class MarkdownConverterTest {
         //When
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -255,7 +259,7 @@ public class MarkdownConverterTest {
                 .withSeparatedDefinitions()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);
@@ -264,7 +268,7 @@ public class MarkdownConverterTest {
         String[] files = outputDirectory.toFile().list();
         expectedFiles.add("definitions");
         assertThat(files).hasSize(5).containsAll(expectedFiles);
-        Path definitionsDirectory = outputDirectory.resolve("definitions");
+        Path definitionsDirectory = outputDirectory.resolve("definitions").resolve("components/schemas");
         verifyMarkdownContainsFieldsInTables(
                 definitionsDirectory.resolve("User.md").toFile(),
                 ImmutableMap.<String, Set<String>>builder()
@@ -287,7 +291,7 @@ public class MarkdownConverterTest {
                 .withSeparatedDefinitions()
                 .withMarkupLanguage(MarkupLanguage.MARKDOWN)
                 .build();
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .build()
                 .toFolder(outputDirectory);

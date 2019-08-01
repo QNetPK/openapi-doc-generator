@@ -24,6 +24,7 @@ import io.github.swagger2markup.model.ArrayModel;
 import io.github.swagger2markup.model.ComposedModel;
 import io.github.swagger2markup.model.ModelImpl;
 import io.github.swagger2markup.model.RefModel;
+import io.github.swagger2markup.utils.IOUtils;
 import io.github.swagger2markup.model.Model;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
@@ -129,14 +130,19 @@ public final class ModelUtils {
 
             Type refType = new ObjectType(refName, null);
             Model referredTo = null;
+            String name = null;
             if (definitions.containsKey(refName)) {
                 referredTo = definitions.get(refName);
                 refType = getType(referredTo, definitions, definitionDocumentResolver);
-                refType.setName(referredTo.getTitle());
-                refType.setUniqueName(refName);
+                name = referredTo.getTitle();
+                if (name == null) {
+                  name = IOUtils.getNameFromDefinitionPath(refName);
+                }
             }
+            refType.setName(name);
+            refType.setUniqueName(refName);
             RefType retRefType = new RefType(definitionDocumentResolver.apply(refName), refType);
-            retRefType.setName(referredTo.getTitle());
+            retRefType.setName(name);
             retRefType.setUniqueName(refName);
             return retRefType;
         } else if (model instanceof ArrayModel) {

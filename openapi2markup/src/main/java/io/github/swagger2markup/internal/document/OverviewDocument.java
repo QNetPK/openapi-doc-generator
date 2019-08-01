@@ -93,8 +93,10 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
         buildContactInfoSection(markupDocBuilder, info.getContact());
         buildLicenseInfoSection(markupDocBuilder, info);
         buildUriSchemeSection(markupDocBuilder, openApi);
-        buildTagsSection(markupDocBuilder, openApi.getTags());
-        if (! config.isProduceConsumeSuppressed()) {
+        if (config.isTagsSectionEnabled()) {
+          buildTagsSection(markupDocBuilder, openApi.getTags());
+        }
+        if (config.isProducesConsumesEnabled()) {
           buildConsumesSection(markupDocBuilder, getConsumes(openApi));
           buildProducesSection(markupDocBuilder, getProduces(openApi));
         }
@@ -159,7 +161,7 @@ public class OverviewDocument extends MarkupComponent<OverviewDocument.Parameter
     }
 
     private void buildUriSchemeSection(MarkupDocBuilder markupDocBuilder, OpenAPI openApi) {
-      if (context.getConfig().getOpenApiVersion() == 3) {
+      if (context.getConfig().getOpenApiVersion() >= 3) {
         serverComponent.apply(markupDocBuilder, ServerComponent.parameters(openApi.getServers(), SECTION_TITLE_LEVEL));
       } else {
         uriSchemeComponent.apply(markupDocBuilder, UriSchemeComponent.parameters(openApi, SECTION_TITLE_LEVEL));

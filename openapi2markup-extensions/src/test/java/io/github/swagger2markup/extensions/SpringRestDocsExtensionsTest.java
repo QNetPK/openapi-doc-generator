@@ -21,6 +21,7 @@ import io.github.swagger2markup.OpenApi2MarkupExtensionRegistry;
 import io.github.swagger2markup.assertions.DiffUtils;
 import io.github.swagger2markup.builder.OpenApi2MarkupConfigBuilder;
 import io.github.swagger2markup.builder.OpenApi2MarkupExtensionRegistryBuilder;
+import io.github.swagger2markup.markup.builder.LineSeparator;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,9 +65,10 @@ public class SpringRestDocsExtensionsTest {
         Properties properties = new Properties();
         properties.load(SpringRestDocsExtensionsTest.class.getResourceAsStream("/config/config.properties"));
         OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder(properties)
+                .withLineSeparator(LineSeparator.UNIX)
                 .build();
 
-        OpenApi2MarkupConverter.from(file)
+        OpenApi2MarkupConverter.fromSwagger(file)
                 .withConfig(config)
                 .withExtensionRegistry(registry)
                 .build()

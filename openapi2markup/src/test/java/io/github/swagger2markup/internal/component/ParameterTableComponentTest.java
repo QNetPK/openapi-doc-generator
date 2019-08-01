@@ -50,7 +50,7 @@ public class ParameterTableComponentTest extends AbstractComponentTest {
     public void testParameterTableComponent() throws URISyntaxException {
         //Given
         Path file = Paths.get(ParameterTableComponentTest.class.getResource("/yaml/swagger_petstore.yaml").toURI());
-        OpenApi2MarkupConverter converter = OpenApi2MarkupConverter.from(file).build();
+        OpenApi2MarkupConverter converter = OpenApi2MarkupConverter.fromSwagger(file).build();
         OpenAPI swagger = converter.getContext().getOpenApi();
 
         PathItem path = swagger.getPaths().get("/pets");

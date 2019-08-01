@@ -61,7 +61,7 @@ public class MarkupDocBuilderTest {
 
     @Test
     public void testAsciiDoc() throws IOException, URISyntaxException {
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
 
         builder = builder.documentTitle("Test title")
                 .sectionTitleLevel(1, "Section Level 1a")
@@ -131,7 +131,7 @@ public class MarkupDocBuilderTest {
 
     @Test
     public void testMarkdownCodeBlock() throws IOException, URISyntaxException {
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
 
         builder = builder.listingBlock("$o = new Thing();", "php");
         Path outputFile = Paths.get("build/test/markdown/test2");
@@ -144,7 +144,7 @@ public class MarkupDocBuilderTest {
 
     @Test
     public void testMarkdown() throws IOException, URISyntaxException {
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
 
         builder = builder.documentTitle("Test title")
                 .sectionTitleLevel(1, "Section Level 1a")
@@ -215,7 +215,7 @@ public class MarkupDocBuilderTest {
 
     @Test
     public void testConfluenceMarkup() throws IOException, URISyntaxException {
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP, LineSeparator.UNIX);
 
         builder = builder.documentTitle("Test title")
                 .sectionTitleLevel(1, "Section Level 1a")
@@ -478,7 +478,7 @@ public class MarkupDocBuilderTest {
     @Test
     public void tableFormatAsciiDoc() throws URISyntaxException, IOException {
         Path outputFile = Paths.get("build/test/asciidoc/tableFormat.adoc");
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.ASCIIDOC, LineSeparator.UNIX);
 
         List<MarkupTableColumn> cols = Arrays.asList(
                 new MarkupTableColumn().withHeader("Header1\nfirst one"),
@@ -498,7 +498,7 @@ public class MarkupDocBuilderTest {
     @Test
     public void tableFormatMarkdown() throws URISyntaxException, IOException {
         Path outputFile = Paths.get("build/test/markdown/tableFormat.md");
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.MARKDOWN, LineSeparator.UNIX);
 
         List<MarkupTableColumn> cols = Arrays.asList(
                 new MarkupTableColumn().withHeader("Header1\nfirst one"),
@@ -517,7 +517,7 @@ public class MarkupDocBuilderTest {
     @Test
     public void tableFormatConfluenceMarkup() throws URISyntaxException, IOException {
         Path outputFile = Paths.get("build/test/confluenceMarkup/tableFormat.txt");
-        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP);
+        MarkupDocBuilder builder = MarkupDocBuilders.documentBuilder(MarkupLanguage.CONFLUENCE_MARKUP, LineSeparator.UNIX);
 
         List<MarkupTableColumn> cols = Arrays.asList(
                 new MarkupTableColumn().withHeader("Header1\nfirst one"),

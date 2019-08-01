@@ -17,7 +17,7 @@
 package io.github.swagger2markup.internal.type;
 
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
-
+import io.github.swagger2markup.utils.IOUtils;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -41,7 +41,7 @@ public class ArrayType extends Type {
           refType = (RefType) this.ofType;
     
           if (this.ofType.getName() == null && refType.getRefType() != null && refType.getRefType().getUniqueName() != null && refType.getRefType().getUniqueName().indexOf('/') != -1) {
-            String tentative = refType.getRefType().getUniqueName().substring(refType.getRefType().getUniqueName().lastIndexOf('/') + 1);
+            String tentative = IOUtils.getNameFromDefinitionPath(refType.getRefType().getUniqueName());
             this.ofType.setName(tentative);
             ((RefType) this.ofType).getRefType().setName(tentative);
           }

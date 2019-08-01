@@ -15,8 +15,10 @@
  */
 package io.github.swagger2markup.internal.component;
 
+import io.github.swagger2markup.OpenApi2MarkupConfig;
 import io.github.swagger2markup.OpenApi2MarkupConverter;
 import io.github.swagger2markup.assertions.DiffUtils;
+import io.github.swagger2markup.builder.OpenApi2MarkupConfigBuilder;
 import io.github.swagger2markup.internal.document.OverviewDocument;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -51,6 +53,9 @@ public class ServerComponentTest extends AbstractComponentTest {
             .addServersItem(new Server().url("http://localhost/v2"))
             .addServersItem(new Server().url("https://localhost/v2"));
 
+        OpenApi2MarkupConfig config = new OpenApi2MarkupConfigBuilder()
+            .withOpenApiVersion(2)
+            .build();
         OpenApi2MarkupConverter.Context context = createContext();
         MarkupDocBuilder markupDocBuilder = context.createMarkupDocBuilder();
 

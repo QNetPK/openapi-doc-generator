@@ -63,7 +63,9 @@ public class InlineSchemaUtils {
                     objectType.setUniqueName(uniqueName);
                 }
                 inlineDefinitions.add(objectType);
-                return new RefType(objectType);
+                RefType refType = new RefType(objectType);
+                refType.setUniqueName(uniqueName);
+                return refType;
             } else
                 return type;
         } else

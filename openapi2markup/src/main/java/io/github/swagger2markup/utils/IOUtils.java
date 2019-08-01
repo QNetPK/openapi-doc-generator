@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public class IOUtils {
@@ -56,4 +57,25 @@ public class IOUtils {
         return new BufferedReader(new InputStreamReader(uri.toURL().openStream(), StandardCharsets.UTF_8));
     }
 
+    /**
+     * Determines relative path by exploding '#/components....' path.
+     *
+     * @param basePath
+     * @param definitionRef
+     * @return a relative path of the definition
+     */
+    public static Path externalizeDefinitionPath(Path basePath, String definitionRef) {
+      String pathString = definitionRef.replace('#', '.');
+      return basePath.resolve(pathString).getParent();
+    }
+
+    /**
+     * Determines the last part of the reference.
+     * 
+     * @param definitionRef
+     * @return the name of the reference without the path.
+     */
+    public static String getNameFromDefinitionPath(String definitionRef) {
+      return definitionRef.substring(definitionRef.lastIndexOf('/') + 1);
+    }
 }

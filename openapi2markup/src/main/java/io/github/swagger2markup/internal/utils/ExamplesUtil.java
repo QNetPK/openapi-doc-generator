@@ -113,9 +113,11 @@ public class ExamplesUtil {
      * @param pathOperation           the OpenAPI Operation
      * @param definitions             the map of definitions
      * @param markupDocBuilder        the markup builder
+     * @param generateOptionalQueryParameterExample    generate optional query parameter example
      * @return an Optional with the example content
      */
-    public static Map<String, Object> generateRequestExampleMap(boolean generateMissingExamples, PathOperation pathOperation, Map<String, Model> definitions, DocumentResolver definitionDocumentResolver, MarkupDocBuilder markupDocBuilder) {
+    public static Map<String, Object> generateRequestExampleMap(boolean generateMissingExamples, PathOperation pathOperation, 
+            Map<String, Model> definitions, DocumentResolver definitionDocumentResolver, MarkupDocBuilder markupDocBuilder, boolean generateOptionalQueryParameterExample) {
         Operation operation = pathOperation.getOperation();
         List<Parameter> parameters = Optional.ofNullable(operation.getParameters()).orElse(new ArrayList<>());
         Map<String, Object> examples = new LinkedHashMap<>();
@@ -177,7 +179,7 @@ public class ExamplesUtil {
                         pathExample = pathExample.replace('{' + parameter.getName() + '}', encodeExampleForUrl(abstractSerializableParameterExample));
                         example = pathExample;
                     } else if (parameter instanceof QueryParameter) {
-                        if (parameter.getRequired())
+                        if (parameter.getRequired() || generateOptionalQueryParameterExample)
                         {
                             String path = (String) examples.get("path");
                             String separator = path.contains("?") ? "&" : "?";

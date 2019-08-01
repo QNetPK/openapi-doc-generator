@@ -15,9 +15,8 @@
  */
 package io.github.swagger2markup;
 
-import java.util.MissingResourceException;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,19 +107,15 @@ public class Labels {
     public static final String MEDIA_TYPE_COLUMN = "media_type";
     
     private ResourceBundle resourceBundle;
-    private ResourceBundle overrideBundle;
-    private Set<String> overriddenLabels;
+    private Map<String, String> overriddenLabels;
     private boolean overridden;
 
     public Labels(OpenApi2MarkupConfig config) {
         this.resourceBundle = ResourceBundle.getBundle("io/github/swagger2markup/lang/labels", config.getOutputLanguage().toLocale());
-        try {
-          this.overrideBundle = ResourceBundle.getBundle("openapi2markup-labels", config.getOutputLanguage().toLocale());
-          this.overriddenLabels = this.overrideBundle.keySet();
+
+        this.overriddenLabels = config.getLabelsOverride();
+        if (this.overriddenLabels != null && !this.overriddenLabels.isEmpty()) {
           overridden = true;
-        } catch (MissingResourceException e) {
-          overridden = false;
-          LOG.info("Label overrides not found", e);
         }
     }
 
@@ -131,8 +126,8 @@ public class Labels {
      * @return the label for the given key
      */
     public String getLabel(String key) {
-        if (overridden && overriddenLabels.contains(key)) {
-          return overrideBundle.getString(key);
+        if (overridden && overriddenLabels.get(key) != null) {
+          return overriddenLabels.get(key);
         }
         return resourceBundle.getString(key);
     }

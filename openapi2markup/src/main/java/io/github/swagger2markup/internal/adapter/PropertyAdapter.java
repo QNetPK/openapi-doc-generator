@@ -26,6 +26,7 @@ import io.github.swagger2markup.internal.type.Type;
 import io.github.swagger2markup.internal.utils.ExamplesUtil;
 import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.model.Model;
+import io.github.swagger2markup.utils.IOUtils;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
@@ -180,7 +181,17 @@ public final class PropertyAdapter {
     public Type getType(DocumentResolver definitionDocumentResolver) {
         Type type = null;
         if (property.get$ref() != null) {
-            type = new RefType(definitionDocumentResolver.apply(property.get$ref()), new ObjectType(property.get$ref(), null));
+            String name = null;
+            if (property.getTitle() != null) {
+              name = property.getTitle();
+            } else if (property.getName() != null) {
+              name = property.getName();
+            } else {
+              name = IOUtils.getNameFromDefinitionPath(property.get$ref());
+            }
+            ObjectType innerType = new ObjectType(name, null);
+            type = new RefType(definitionDocumentResolver.apply(property.get$ref()), innerType);
+            type.setUniqueName(property.get$ref());
         } else if (property instanceof ArraySchema) {
             ArraySchema arrayProperty = (ArraySchema) property;
             Schema items = arrayProperty.getItems();

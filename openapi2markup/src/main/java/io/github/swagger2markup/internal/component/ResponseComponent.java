@@ -91,7 +91,10 @@ public class ResponseComponent extends MarkupComponent<ResponseComponent.Paramet
 
             Map<String, ApiResponse> sortedResponses = toSortedMap(responses, config.getResponseOrdering());
             sortedResponses.forEach((String responseName, ApiResponse response) -> {
-              for (Entry<String, MediaType> mType : Optional.ofNullable(response.getContent()).orElse(new Content()).entrySet()) {
+              if (response.getContent() == null || response.getContent().isEmpty()) {
+                response.setContent(createEmptyContent());
+              }
+              for (Entry<String, MediaType> mType : response.getContent().entrySet()) {
                 String schemaContent = labels.getLabel(NO_CONTENT);
 
                 Model model = ModelUtils.convertToModel(mType.getValue().getSchema());
@@ -166,6 +169,12 @@ public class ResponseComponent extends MarkupComponent<ResponseComponent.Paramet
         }
         applyPathsDocumentExtension(new PathsDocumentExtension.Context(PathsDocumentExtension.Position.OPERATION_RESPONSES_AFTER, markupDocBuilder, operation));
         return markupDocBuilder;
+    }
+
+    private Content createEmptyContent() {
+      Content emptyContent = new Content();
+      emptyContent.addMediaType("application/json", new MediaType());
+      return emptyContent;
     }
 
     /**

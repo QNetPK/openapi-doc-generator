@@ -63,7 +63,7 @@ public class GeneralConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(GeneralConverterTest.class.getResource("/yaml/swagger_petstore.yaml").toURI()).build()
+        OpenApi2MarkupConverter.fromSwagger(GeneralConverterTest.class.getResource("/yaml/swagger_petstore.yaml").toURI()).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -78,7 +78,7 @@ public class GeneralConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(Paths.get("src/test/resources/yaml/swagger_petstore.yaml").toUri()).build()
+        OpenApi2MarkupConverter.fromSwagger(Paths.get("src/test/resources/yaml/swagger_petstore.yaml").toUri()).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -93,7 +93,7 @@ public class GeneralConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(URI.create("src/test/resources/yaml/swagger_petstore.yaml")).build()
+        OpenApi2MarkupConverter.fromSwagger(URI.create("src/test/resources/yaml/swagger_petstore.yaml")).build()
                 .toFolder(outputDirectory);
 
         //Then
@@ -108,7 +108,7 @@ public class GeneralConverterTest {
         FileUtils.deleteQuietly(outputDirectory.toFile());
 
         //When
-        OpenApi2MarkupConverter.from(new URL("http://petstore.swagger.io/v2/swagger.json")).build()
+        OpenApi2MarkupConverter.fromSwagger(new URL("http://petstore.swagger.io/v2/swagger.json")).build()
                 .toFolder(outputDirectory);
 
         //Then

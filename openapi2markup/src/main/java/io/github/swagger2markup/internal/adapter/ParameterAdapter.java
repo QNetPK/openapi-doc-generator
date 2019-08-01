@@ -32,6 +32,7 @@ import io.github.swagger2markup.markup.builder.MarkupDocBuilder;
 import io.github.swagger2markup.model.BodyParameter;
 import io.github.swagger2markup.model.Model;
 import io.github.swagger2markup.model.PathOperation;
+import io.github.swagger2markup.utils.IOUtils;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -190,11 +191,18 @@ public class ParameterAdapter {
 
                 type = new ArrayType(parameter.getName(), new PropertyAdapter(((ArraySchema)parameter.getSchema()).getItems()).getType(definitionDocumentResolver), collectionFormat);
             }
-        } else if (parameter.get$ref() != null) {
-            String refName = parameter.get$ref();
-
-            type = new RefType(definitionDocumentResolver.apply(refName), new ObjectType(refName, null /* FIXME, not used for now */));
+            if (parameter.getSchema().get$ref() != null) {
+              String refName = parameter.getSchema().get$ref();
+              String name = parameter.getSchema().getName();
+              if (name == null) {
+                IOUtils.getNameFromDefinitionPath(refName);
+              }
+              ObjectType innerType = new ObjectType(name, null);
+              innerType.setUniqueName(refName);
+              type = new RefType(definitionDocumentResolver.apply(refName), innerType);
+            }
         }
+
         return type;
     }
 
